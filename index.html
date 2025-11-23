@@ -2,7 +2,10 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  />
   <title>Advents-Challenge Finale</title>
   <style>
     * { box-sizing: border-box; }
@@ -12,6 +15,8 @@
       margin:0;
       padding:16px;
       color:#fff;
+      -webkit-user-select:none;
+      user-select:none;
     }
     .card {
       max-width:680px;
@@ -33,6 +38,9 @@
       margin:6px;
       font-weight:600;
       box-shadow:0 4px 12px rgba(0,0,0,0.3);
+      font-size:16px;
+      touch-action:manipulation;
+      -ms-touch-action:manipulation;
     }
     input {
       width:100%;
@@ -49,6 +57,28 @@
       border-radius:12px;
       border:2px solid #fff;
       max-width:100%;
+      touch-action:none;
+    }
+    .center { text-align:center; }
+    .big-symbol {
+      font-size:64px;
+      text-align:center;
+      margin:16px 0;
+    }
+    select {
+      font-size:16px;
+      padding:6px;
+      margin:4px;
+      border-radius:8px;
+      border:none;
+    }
+    .small {
+      font-size:13px;
+      opacity:0.9;
+    }
+    .code-row {
+      font-size:14px;
+      margin:4px 0;
     }
   </style>
 </head>
@@ -64,27 +94,25 @@
 
 <div class="card">
 
-  <!-- Intro allgemein -->
+  <!-- Intro -->
   <section id="screen-intro" class="hidden">
     <h1>🎄 Advents-Challenge</h1>
     <p id="attemptInfo" style="color:#ffdddd; font-weight:600; display:none; text-align:center;"></p>
     <p>Name eingeben:</p>
     <input id="playerName" placeholder="Janine <3" />
-    <div style="text-align:center;">
+    <div class="center">
       <button onclick="goQuizInfo()">Weiter zum Quiz ▶️</button>
     </div>
   </section>
 
-  <!-- Quiz: Info-Screen -->
+  <!-- Quiz: Info -->
   <section id="screen-quiz-info" class="hidden">
     <h2>❄️ Quiz – Infos</h2>
-    <p style="text-align:center;">
-      6 schwere, aber lösbare Weihnachtsfragen.<br>
-      Jede Frage hat 5 Antwortmöglichkeiten.<br><br>
-      ✅ Richtig: +10 Punkte<br>
-      ❌ Falsch: –1 Punkt
+    <p class="center">
+      10 anspruchsvolle Weihnachtsfragen mit je 5 Antwortmöglichkeiten.<br>
+      ✅ Richtig: +10 Punkte &nbsp;&nbsp; ❌ Falsch: -1 Punkt
     </p>
-    <div style="text-align:center;">
+    <div class="center">
       <button onclick="startQuiz()">Quiz starten ▶️</button>
     </div>
   </section>
@@ -92,24 +120,24 @@
   <!-- Quiz -->
   <section id="screen-quiz" class="hidden">
     <h2>❄️ Quiz</h2>
-    <p id="quiz-progress" style="text-align:center"></p>
+    <p id="quiz-progress" class="center"></p>
     <h3 id="quiz-question"></h3>
-    <div id="quiz-answers" style="text-align:center"></div>
+    <div id="quiz-answers" class="center"></div>
   </section>
 
-  <!-- Labyrinth: Info-Screen -->
+  <!-- Labyrinth: Info -->
   <section id="screen-maze-info" class="hidden">
     <h2>🎅 Labyrinth – Infos</h2>
-    <p style="text-align:center;">
+    <p class="center">
       Steuere den Nikolaus zur goldenen Geschenk-Kiste 🎁<br><br>
-      Je schneller du bist, desto mehr Punkte:<br>
+      Punkte nach Zeit:<br>
       ≤ 15 s → 60 Punkte<br>
       15–25 s → 45 Punkte<br>
       25–35 s → 30 Punkte<br>
       35–50 s → 15 Punkte<br>
       > 50 s → 5 Punkte
     </p>
-    <div style="text-align:center;">
+    <div class="center">
       <button onclick="startMaze()">Labyrinth starten ▶️</button>
     </div>
   </section>
@@ -117,9 +145,9 @@
   <!-- Labyrinth -->
   <section id="screen-maze" class="hidden">
     <h2>🎅 Nikolaus im Labyrinth</h2>
-    <p id="maze-time" style="text-align:center; margin-bottom:4px;">Zeit: 0,00 s</p>
+    <p id="maze-time" class="center" style="margin-bottom:4px;">Zeit: 0,00 s</p>
     <canvas id="maze"></canvas>
-    <div style="text-align:center;">
+    <div class="center">
       <button onclick="moveSanta(0,-1)">⬆️</button><br />
       <button onclick="moveSanta(-1,0)">⬅️</button>
       <button onclick="moveSanta(1,0)">➡️</button><br />
@@ -127,14 +155,42 @@
     </div>
   </section>
 
-  <!-- Schätzfragen: Info-Screen -->
+  <!-- Glocken-Spiel: Info -->
+  <section id="screen-bell-info" class="hidden">
+    <h2>🔔 Glocken-Reflex – Infos</h2>
+    <p class="center">
+      Es werden nacheinander 15 Symbole angezeigt, davon 3 Glocken (🔔).<br>
+      Tippe so schnell wie möglich, wenn eine Glocke erscheint.<br>
+      Falsche Klicks geben Minuspunkte.
+    </p>
+    <div class="center">
+      <button onclick="startBellGame()">Glocken-Spiel starten ▶️</button>
+    </div>
+  </section>
+
+  <!-- Glocken-Spiel -->
+  <section id="screen-bell" class="hidden">
+    <h2>🔔 Glocken-Reflex</h2>
+    <p id="bell-progress" class="center"></p>
+    <div id="bell-symbol" class="big-symbol">❄️</div>
+    <p id="bell-status" class="center small">
+      Tippe nur, wenn eine Glocke (🔔) zu sehen ist.
+    </p>
+    <div class="center">
+      <button id="bell-button" onclick="pressBell()">JETZT tippen, wenn Glocke!</button>
+    </div>
+    <p id="bell-result" class="center"></p>
+  </section>
+
+  <!-- Schätzfragen: Info -->
   <section id="screen-guess-info" class="hidden">
     <h2>📏 Schätzfragen – Infos</h2>
-    <p style="text-align:center;">
-      Du gibst nur eine Zahl ein– die Einheit steht in der Frage.<br>
-      Je besser geschätzt, desto mehr Punkte.
+    <p class="center">
+      Du bekommst mehrere Schätzfragen mit Weihnachtsbezug.<br>
+      Gib nur die Zahl ein – die Einheit steht in der Frage.<br>
+      Je genauer du liegst, desto mehr Punkte.
     </p>
-    <div style="text-align:center;">
+    <div class="center">
       <button onclick="startGuessGame()">Schätzfragen starten ▶️</button>
     </div>
   </section>
@@ -142,32 +198,100 @@
   <!-- Schätzfragen -->
   <section id="screen-guess" class="hidden">
     <h2>📏 Schätzfragen</h2>
-    <p id="guess-progress" style="text-align:center;"></p>
+    <p id="guess-progress" class="center"></p>
     <h3 id="guess-question"></h3>
     <input id="guessInput" type="number" placeholder="Zahl eingeben" />
-    <div style="text-align:center;">
+    <div class="center">
       <button id="guessBtn" onclick="submitGuess()">Antwort prüfen</button>
     </div>
     <p id="guess-result" style="margin-top:10px;"></p>
   </section>
 
+  <!-- Code: Info -->
+  <section id="screen-code-info" class="hidden">
+    <h2>🔐 Weihnachts-Code – Infos</h2>
+    <p class="center">
+      Es gibt einen geheimen Code aus 3 Weihnachtssymbolen (🎄 🎁 ⭐ 🎅 🔔).<br>
+      Du hast 5 Versuche, den Code zu knacken.<br>
+      Nach jedem Versuch bekommst du Hinweise.
+    </p>
+    <div class="center">
+      <button onclick="startCodeGame()">Code-Spiel starten ▶️</button>
+    </div>
+  </section>
+
+  <!-- Code-Spiel -->
+  <section id="screen-code" class="hidden">
+    <h2>🔐 Weihnachts-Code knacken</h2>
+    <p id="code-progress" class="center"></p>
+    <div class="center">
+      <select id="codePos1"></select>
+      <select id="codePos2"></select>
+      <select id="codePos3"></select>
+    </div>
+    <div class="center">
+      <button id="codeBtn" onclick="submitCodeGuess()">Kombination prüfen</button>
+    </div>
+    <div id="code-log" style="margin-top:10px;"></div>
+    <p id="code-result" class="center"></p>
+  </section>
+
+  <!-- Stoppuhr: Info -->
+  <section id="screen-timer-info" class="hidden">
+    <h2>⏱ 10-Sekunden-Challenge – Infos</h2>
+    <p class="center">
+      Versuche, so nah wie möglich an 10,00 Sekunden zu stoppen.<br>
+      Nur Gefühl – keine sichtbare Uhr.
+    </p>
+    <div class="center">
+      <button onclick="startTimerGame()">Challenge starten ▶️</button>
+    </div>
+  </section>
+
+  <!-- Stoppuhr-Spiel -->
+  <section id="screen-timer" class="hidden">
+    <h2>⏱ 10-Sekunden-Challenge</h2>
+    <p class="center" id="timer-info">
+      Drücke „Start“, zähle im Kopf und drücke „Stopp“ möglichst genau bei 10,00 s.
+    </p>
+    <div class="center">
+      <button id="timerStartBtn" onclick="timerStart()">Start</button>
+      <button id="timerStopBtn" onclick="timerStop()" disabled>Stopp</button>
+    </div>
+    <p id="timer-result" class="center" style="margin-top:10px;"></p>
+    <div class="center" id="timer-next" style="margin-top:10px;"></div>
+  </section>
+
   <!-- Ergebnis -->
   <section id="screen-result" class="hidden">
     <h2>🏆 Ergebnis</h2>
-    <p id="resultPoints" style="text-align:center;"></p>
-    <p style="text-align:center; margin-top:12px;">
-      📸 Mach einen Screenshot und schicke ihn in die Gruppe.<br>
-      Für die Wertung zählt nur dein erster Versuch.
-    </p>
-    <p style="text-align:center; margin-top:10px; font-size:13px; opacity:0.9;">
-      Wenn du nochmal spielen willst → Link neu öffnen.
+    <p id="resultPoints" class="center"></p>
+    <p class="center" style="margin-top:12px;">
+      📸 Mach einen Screenshot von diesem Bildschirm<br />
+      und schicke ihn in die Gruppe. Für die Wertung zählt nur dein erster Versuch.
     </p>
   </section>
 
 </div>
 
 <script>
-/* -------- Passwort & Intro -------- */
+/* ---------- Allgemeine Navigation / Passwort ---------- */
+function show(id) {
+  [
+    'screen-intro','screen-quiz-info','screen-quiz',
+    'screen-maze-info','screen-maze',
+    'screen-bell-info','screen-bell',
+    'screen-guess-info','screen-guess',
+    'screen-code-info','screen-code',
+    'screen-timer-info','screen-timer',
+    'screen-result'
+  ].forEach(s => {
+    const el = document.getElementById(s);
+    if (el) el.classList.add('hidden');
+  });
+  document.getElementById(id).classList.remove('hidden');
+}
+
 function checkPW() {
   const pw = document.getElementById('pwInput').value.trim();
   if (pw === 'HOTMarco') {
@@ -189,35 +313,35 @@ function initIntro() {
   }
 }
 
-function show(id) {
-  [
-    'screen-intro','screen-quiz-info','screen-quiz',
-    'screen-maze-info','screen-maze',
-    'screen-guess-info','screen-guess',
-    'screen-result'
-  ].forEach(s => {
-    const el = document.getElementById(s);
-    if (el) el.classList.add('hidden');
-  });
-  document.getElementById(id).classList.remove('hidden');
-}
-
-function goQuizInfo(){
-  const name = document.getElementById("playerName").value.trim();
-  if(!name){ alert("Bitte Name eingeben!"); return; }
-  playerName = name;
-  show("screen-quiz-info");
-}
-
-/* -------- Score -------- */
 let playerName = "";
 let totalPoints = 0;
 let quizPoints = 0;
 let labyrinthPoints = 0;
+let bellPoints = 0;
 let guessPoints = 0;
+let codePoints = 0;
+let timerPoints = 0;
 let wrongAnswers = 0;
 
-/* -------- Quizfragen -------- */
+function goQuizInfo() {
+  const name = document.getElementById('playerName').value.trim();
+  if (!name) {
+    alert("Bitte gib deinen Namen ein.");
+    return;
+  }
+  playerName = name;
+  totalPoints = 0;
+  quizPoints = 0;
+  labyrinthPoints = 0;
+  bellPoints = 0;
+  guessPoints = 0;
+  codePoints = 0;
+  timerPoints = 0;
+  wrongAnswers = 0;
+  show('screen-quiz-info');
+}
+
+/* ---------- Quiz ---------- */
 const quiz = [
   {
     q: "Wie schreibt man „Feliz Navidad“ richtig?",
@@ -245,6 +369,26 @@ const quiz = [
     c: 1
   },
   {
+    q: "In welchem Land ist „Sinterklaas“ eine zentrale Figur in der Vorweihnachtszeit?",
+    a: ["Belgien","Deutschland","Niederlande","Schweden","Frankreich"],
+    c: 2
+  },
+  {
+    q: "Welches Land gilt als Ursprungsland des modernen, geschmückten Weihnachtsbaums?",
+    a: ["Österreich","Deutschland","Frankreich","Norwegen","Polen"],
+    c: 1
+  },
+  {
+    q: "In welchem US-Bundesstaat spielt der Großteil des Films „Kevin – Allein zu Haus“?",
+    a: ["New York","Kalifornien","Illinois","Ohio","Massachusetts"],
+    c: 2
+  },
+  {
+    q: "Wie viele Geister besuchen Ebenezer Scrooge in „A Christmas Carol“ insgesamt?",
+    a: ["Zwei","Drei","Vier","Fünf","Sechs"],
+    c: 2
+  },
+  {
     q: "Wer ist gleich nochmal HOT?",
     a: ["Bene","Simon","Der Weihnachtsmann","Der Grinch","Marco"],
     c: 4
@@ -253,52 +397,60 @@ const quiz = [
 
 let qi = 0;
 
-function startQuiz(){
-  totalPoints=0; quizPoints=0; wrongAnswers=0;
-  qi=0;
-  show("screen-quiz");
+function startQuiz() {
+  qi = 0;
+  quizPoints = 0;
+  wrongAnswers = 0;
+  show('screen-quiz');
   renderQuestion();
 }
 
-function renderQuestion(){
+function renderQuestion() {
   const qObj = quiz[qi];
-  document.getElementById("quiz-progress").textContent =
-    `Frage ${qi+1} von ${quiz.length}`;
-  document.getElementById("quiz-question").textContent = qObj.q;
-
-  const answersDiv = document.getElementById("quiz-answers");
-  answersDiv.innerHTML="";
-  qObj.a.forEach((ans,i)=>{
-    const btn = document.createElement("button");
-    btn.textContent=ans;
-    btn.onclick=()=>checkAnswer(i);
+  document.getElementById('quiz-progress').textContent =
+    `Frage ${qi + 1} von ${quiz.length}`;
+  document.getElementById('quiz-question').textContent = qObj.q;
+  const answersDiv = document.getElementById('quiz-answers');
+  answersDiv.innerHTML = '';
+  qObj.a.forEach((ans, i) => {
+    const btn = document.createElement('button');
+    btn.textContent = ans;
+    btn.onclick = () => checkAnswer(i);
     answersDiv.appendChild(btn);
   });
 }
 
-function checkAnswer(i){
-  if(i===quiz[qi].c){
-    totalPoints+=10; quizPoints+=10;
+function checkAnswer(i) {
+  const qObj = quiz[qi];
+  if (i === qObj.c) {
+    totalPoints += 10;
+    quizPoints += 10;
     qi++;
-    if(qi<quiz.length){ renderQuestion(); }
-    else { show("screen-maze-info"); }
+    if (qi < quiz.length) {
+      renderQuestion();
+    } else {
+      show('screen-maze-info');
+    }
   } else {
-    totalPoints-=1; quizPoints-=1; wrongAnswers++;
+    wrongAnswers++;
+    totalPoints -= 1;
+    quizPoints -= 1;
     alert("Falsch! -1 Punkt");
   }
 }
 
-/* -------- Labyrinth -------- */
-const maze=document.getElementById("maze");
-const ctx=maze.getContext("2d");
-const mazeSize=10;
+/* ---------- Labyrinth ---------- */
+const maze = document.getElementById('maze');
+const ctx = maze.getContext('2d');
+const mazeSize = 10;
 let cellSize;
-let santa={x:0,y:0};
-let mazeTimerInterval=null;
-let mazeStart=0;
-let mazeTime=0;
+let santa = { x: 0, y: 0 };
+let mazeTimerInterval = null;
+let mazeStart = 0;
+let mazeTime = 0;
+const mazeTimeLabel = document.getElementById('maze-time');
 
-const mazeMap=[
+const mazeMap = [
   [0,0,1,1,1,1,1,1,1,1],
   [1,0,0,0,1,0,0,0,0,1],
   [1,1,1,0,1,0,1,1,0,1],
@@ -311,174 +463,205 @@ const mazeMap=[
   [1,0,0,0,0,0,0,1,0,2]
 ];
 
-function setupMazeCanvas(){
-  const size=Math.min(360, window.innerWidth-40);
-  maze.width=size; maze.height=size;
-  cellSize=size/mazeSize;
+function setupMazeCanvas() {
+  const size = Math.min(360, window.innerWidth - 40);
+  maze.width = size;
+  maze.height = size;
+  cellSize = size / mazeSize;
 }
 
-function startMaze(){
-  show("screen-maze");
+function startMaze() {
+  show('screen-maze');
   setupMazeCanvas();
-  santa={x:0,y:0};
-  mazeStart=performance.now();
-  mazeTime=0;
-  document.getElementById("maze-time").textContent="Zeit: 0,00 s";
-
-  if(mazeTimerInterval) clearInterval(mazeTimerInterval);
-  mazeTimerInterval=setInterval(()=>{
-    mazeTime=(performance.now()-mazeStart)/1000;
-    document.getElementById("maze-time").textContent="Zeit: "+mazeTime.toFixed(2)+" s";
-  },100);
-
+  santa = { x: 0, y: 0 };
+  mazeStart = performance.now();
+  mazeTime = 0;
+  mazeTimeLabel.textContent = "Zeit: 0,00 s";
+  if (mazeTimerInterval) clearInterval(mazeTimerInterval);
+  mazeTimerInterval = setInterval(() => {
+    mazeTime = (performance.now() - mazeStart) / 1000;
+    mazeTimeLabel.textContent = "Zeit: " + mazeTime.toFixed(2) + " s";
+  }, 100);
   drawMaze();
 }
 
-function drawMaze(){
-  for(let y=0;y<mazeSize;y++){
-    for(let x=0;x<mazeSize;x++){
-      const v=mazeMap[y][x];
-      const cx=x*cellSize, cy=y*cellSize;
-
-      if(v===1){
-        ctx.fillStyle="#04131d";
-        ctx.fillRect(cx,cy,cellSize,cellSize);
+function drawMaze() {
+  for (let y = 0; y < mazeSize; y++) {
+    for (let x = 0; x < mazeSize; x++) {
+      const v = mazeMap[y][x];
+      const cx = x * cellSize;
+      const cy = y * cellSize;
+      if (v === 1) {
+        ctx.fillStyle = "#04131d";
+        ctx.fillRect(cx, cy, cellSize, cellSize);
       } else {
-        ctx.fillStyle="#06495b";
-        ctx.fillRect(cx,cy,cellSize,cellSize);
+        ctx.fillStyle = "#06495b";
+        ctx.fillRect(cx, cy, cellSize, cellSize);
       }
-
-      if(v===2){
-        ctx.fillStyle="#f1c40f";
-        ctx.fillRect(cx+cellSize*0.2, cy+cellSize*0.25, cellSize*0.6,cellSize*0.5);
+      if (v === 2) {
+        ctx.fillStyle = "#f1c40f";
+        ctx.fillRect(cx + cellSize*0.2, cy + cellSize*0.25, cellSize*0.6, cellSize*0.5);
       }
     }
   }
-
-  // Santa
-  const sx=santa.x*cellSize+cellSize/2;
-  const sy=santa.y*cellSize+cellSize/2;
-  ctx.fillStyle="#e74c3c";
+  const sx = santa.x * cellSize + cellSize / 2;
+  const sy = santa.y * cellSize + cellSize / 2;
+  ctx.fillStyle = "#e74c3c";
   ctx.beginPath();
-  ctx.arc(sx,sy,cellSize*0.3,0,Math.PI*2);
+  ctx.arc(sx, sy, cellSize * 0.3, 0, Math.PI * 2);
   ctx.fill();
 }
 
-function moveSanta(dx,dy){
-  const nx=santa.x+dx, ny=santa.y+dy;
-  if(nx<0||ny<0||nx>=mazeSize||ny>=mazeSize) return;
-  if(mazeMap[ny][nx]===1) return;
-  santa.x=nx; santa.y=ny;
-
-  if(mazeMap[ny][nx]===2){
-    if(mazeTimerInterval) clearInterval(mazeTimerInterval);
-    mazeTime=(performance.now()-mazeStart)/1000;
-
-    if(mazeTime<=15) labyrinthPoints=60;
-    else if(mazeTime<=25) labyrinthPoints=45;
-    else if(mazeTime<=35) labyrinthPoints=30;
-    else if(mazeTime<=50) labyrinthPoints=15;
-    else labyrinthPoints=5;
-
-    totalPoints+=labyrinthPoints;
-    show("screen-guess-info");
+function moveSanta(dx, dy) {
+  const nx = santa.x + dx;
+  const ny = santa.y + dy;
+  if (nx < 0 || ny < 0 || nx >= mazeSize || ny >= mazeSize) return;
+  if (mazeMap[ny][nx] === 1) return;
+  santa.x = nx;
+  santa.y = ny;
+  if (mazeMap[ny][nx] === 2) {
+    if (mazeTimerInterval) clearInterval(mazeTimerInterval);
+    mazeTime = (performance.now() - mazeStart) / 1000;
+    if (mazeTime <= 15) labyrinthPoints = 60;
+    else if (mazeTime <= 25) labyrinthPoints = 45;
+    else if (mazeTime <= 35) labyrinthPoints = 30;
+    else if (mazeTime <= 50) labyrinthPoints = 15;
+    else labyrinthPoints = 5;
+    totalPoints += labyrinthPoints;
+    show('screen-bell-info');
   }
-
   drawMaze();
 }
 
-/* -------- Schätzfragen -------- */
-const guesses=[
-  { q:"Wie viele Christbäume wurden 2024 in Deutschland verkauft? (Mio.)", correct:23, unit:"Mio." },
-  { q:"Wie viel Truthahnfleisch wurde 2024 in den USA verzehrt? (Tsd. Tonnen)", correct:228, unit:"Tsd. Tonnen" },
-  { q:"Wie viele Liter Glühwein trinken die Deutschen pro Jahr? (Mio. Liter)", correct:50, unit:"Mio. Liter" },
-  { q:"Wie viele Pakete liefert DHL im Dezember? (Mio.)", correct:675, unit:"Mio." },
-  { q:"Wie viele Weihnachtsmärkte gibt es in Deutschland? (Anzahl)", correct:2500, unit:"" },
-  { q:"Wie viele Schoko-Weihnachtsmänner werden produziert? (Mio.)", correct:151, unit:"Mio." },
-  { q:"Wie viel Geld gibt eine Person an Weihnachten aus? (Euro)", correct:550, unit:"€" }
-];
+/* ---------- Glocken-Spiel ---------- */
+const bellSymbolsAll = ["🎄","🎁","⭐","🎅","❄️","🔔"];
+let bellSequence = [];
+let bellIndex = -1;
+let bellInterval = null;
+let bellCurrentStart = 0;
+let bellCurrentIsBell = false;
+let bellClickedThisSymbol = false;
+let bellHits = 0;
+let bellFalseClicks = 0;
+let bellFinished = false;
 
-let guessIndex=0;
-let guessState="question";
-
-function startGuessGame(){
-  show("screen-guess");
-  guessIndex=0; guessPoints=0;
-  guessState="question";
-  renderGuessQuestion();
+function startBellGame() {
+  show('screen-bell');
+  bellPoints = 0;
+  bellHits = 0;
+  bellFalseClicks = 0;
+  bellIndex = -1;
+  bellFinished = false;
+  document.getElementById('bell-result').textContent = "";
+  document.getElementById('bell-status').textContent =
+    "Tippe nur, wenn eine Glocke (🔔) zu sehen ist.";
+  document.getElementById('bell-button').textContent =
+    "JETZT tippen, wenn Glocke!";
+  generateBellSequence();
+  if (bellInterval) clearInterval(bellInterval);
+  nextBellSymbol();
+  bellInterval = setInterval(nextBellSymbol, 550); // schnell: 0,55 s pro Symbol
 }
 
-function renderGuessQuestion(){
-  const g=guesses[guessIndex];
-  document.getElementById("guess-progress").textContent =
-    `Schätzfrage ${guessIndex+1} von ${guesses.length}`;
-  document.getElementById("guess-question").textContent=g.q;
-  document.getElementById("guessInput").value="";
-  document.getElementById("guess-result").textContent="";
-  document.getElementById("guessBtn").textContent="Antwort prüfen";
-  guessState="question";
-}
-
-function submitGuess(){
-  const g=guesses[guessIndex];
-
-  if(guessState==="question"){
-    const raw=document.getElementById("guessInput").value.trim();
-    const val=parseFloat(raw);
-    if(isNaN(val)){ alert("Bitte Zahl eingeben!"); return; }
-
-    const diff=Math.abs(val-g.correct);
-    const diffPercent=(diff/g.correct)*100;
-
-    let pts=5;
-    if(diffPercent<=5) pts=40;
-    else if(diffPercent<=10) pts=30;
-    else if(diffPercent<=20) pts=20;
-    else if(diffPercent<=30) pts=10;
-
-    guessPoints+=pts;
-    totalPoints+=pts;
-
-    document.getElementById("guess-result").innerHTML =
-      `Deine Schätzung: <b>${val} ${g.unit}</b><br>
-       Richtige Antwort: <b>${g.correct} ${g.unit}</b><br>
-       Abweichung: <b>${diffPercent.toFixed(1)} %</b><br>
-       Punkte: <b>${pts}</b>`;
-
-    guessState="answer";
-    document.getElementById("guessBtn").textContent =
-      (guessIndex<guesses.length-1 ? "Nächste ▶️" : "Zum Ergebnis ▶️");
-
-  } else {
-    if(guessIndex<guesses.length-1){
-      guessIndex++;
-      renderGuessQuestion();
+function generateBellSequence() {
+  bellSequence = new Array(15).fill(null);
+  const bellPositions = [];
+  while (bellPositions.length < 3) {
+    const idx = Math.floor(Math.random() * 15);
+    if (!bellPositions.includes(idx)) bellPositions.push(idx);
+  }
+  for (let i = 0; i < 15; i++) {
+    if (bellPositions.includes(i)) {
+      bellSequence[i] = { symbol: "🔔", isBell: true };
     } else {
-      finishGame();
+      const others = bellSymbolsAll.filter(s => s !== "🔔");
+      const sym = others[Math.floor(Math.random() * others.length)];
+      bellSequence[i] = { symbol: sym, isBell: false };
     }
   }
 }
 
-/* -------- Ergebnis -------- */
-function finishGame(){
-  show("screen-result");
-
-  attempts++;
-  localStorage.setItem("advent_attempts", attempts);
-
-  const attemptText=(attempts===1)
-    ? "Dies war dein erster offizieller Versuch."
-    : "Hinweis: Nur dein erster Versuch zählt.";
-
-  document.getElementById("resultPoints").innerHTML =
-    `${playerName}, du hast insgesamt <b>${totalPoints}</b> Punkte!<br><br>
-     Quiz: <b>${quizPoints}</b> Punkte (Fehler: ${wrongAnswers})<br>
-     Labyrinth: <b>${labyrinthPoints}</b> Punkte<br>
-     Schätzfragen: <b>${guessPoints}</b> Punkte<br><br>
-     Anzahl der Versuche: <b>${attempts}</b><br>
-     ${attemptText}`;
+function nextBellSymbol() {
+  bellIndex++;
+  if (bellIndex >= bellSequence.length) {
+    endBellGame();
+    return;
+  }
+  const obj = bellSequence[bellIndex];
+  document.getElementById('bell-symbol').textContent = obj.symbol;
+  document.getElementById('bell-progress').textContent =
+    `Symbol ${bellIndex + 1} von ${bellSequence.length}`;
+  bellCurrentStart = performance.now();
+  bellCurrentIsBell = obj.isBell;
+  bellClickedThisSymbol = false;
 }
-</script>
 
-</body>
-</html>
+function pressBell() {
+  if (!bellFinished) {
+    if (bellCurrentIsBell && !bellClickedThisSymbol) {
+      const rt = (performance.now() - bellCurrentStart) / 1000;
+      let pts = 2;
+      if (rt <= 0.25) pts = 10;
+      else if (rt <= 0.5) pts = 7;
+      else if (rt <= 0.8) pts = 5;
+      bellPoints += pts;
+      bellHits++;
+      bellClickedThisSymbol = true;
+      document.getElementById('bell-status').textContent =
+        `Glocke getroffen! Reaktionszeit: ${rt.toFixed(2)} s (+${pts} Punkte)`;
+    } else {
+      bellPoints -= 3;
+      bellFalseClicks++;
+      document.getElementById('bell-status').textContent =
+        `Fehlklick! -3 Punkte`;
+    }
+  } else {
+    // nach Spielende: weiter zu Schätzfragen-Info
+    show('screen-guess-info');
+  }
+}
+
+function endBellGame() {
+  if (bellInterval) clearInterval(bellInterval);
+  bellFinished = true;
+  totalPoints += bellPoints;
+  const res = document.getElementById('bell-result');
+  res.innerHTML =
+    `Glocken getroffen: <b>${bellHits}</b> von 3<br>` +
+    `Fehlklicks: <b>${bellFalseClicks}</b><br>` +
+    `Punkte im Glocken-Spiel: <b>${bellPoints}</b>`;
+  document.getElementById('bell-status').textContent =
+    "Runde beendet.";
+  document.getElementById('bell-button').textContent =
+    "Weiter zu den Schätzfragen ▶️";
+}
+
+/* ---------- Schätzfragen ---------- */
+const guesses = [
+  { q: "Wie viele Christbäume wurden 2024 in Deutschland verkauft? (in Millionen)", correct: 23, unit: "Mio." },
+  { q: "Wie viel Truthahnfleisch wurde 2024 in den USA verzehrt? (in Tausend Tonnen)", correct: 228, unit: "Tsd. Tonnen" },
+  { q: "Wie viele Liter Glühwein trinken die Deutschen pro Jahr? (in Millionen Litern)", correct: 50, unit: "Mio. Liter" },
+  { q: "Wie viele Pakete liefert DHL im Dezember in Deutschland aus? (in Millionen Paketen)", correct: 675, unit: "Mio. Pakete" },
+  { q: "Wie viele Weihnachtsmärkte gibt es in Deutschland? (Anzahl)", correct: 2500, unit: "" },
+  { q: "Wie viele Schoko-Weihnachtsmänner werden in Deutschland pro Jahr produziert? (in Millionen Stück)", correct: 151, unit: "Mio." },
+  { q: "Wie viel Geld gibt eine Person in Deutschland im Schnitt für Weihnachten aus? (in Euro pro Person)", correct: 550, unit: "€" }
+];
+
+let guessIndex = 0;
+let guessState = 'question';
+
+function startGuessGame() {
+  show('screen-guess');
+  guessIndex = 0;
+  guessPoints = 0;
+  guessState = 'question';
+  renderGuessQuestion();
+}
+
+function renderGuessQuestion() {
+  const g = guesses[guessIndex];
+  document.getElementById('guess-progress').textContent =
+    `Schätzfrage ${guessIndex + 1} von ${guesses.length}`;
+  document.getElementById('guess-question').textContent = g.q;
+  document.getElementById('guessInput').value = "";
+  documen
