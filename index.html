@@ -41,6 +41,7 @@
       font-size:16px;
       touch-action:manipulation;
       -ms-touch-action:manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
     input {
       width:100%;
@@ -275,7 +276,7 @@
 </div>
 
 <script>
-/* ---------- Allgemeine Navigation / Passwort ---------- */
+/* ---------- Navigation & Passwort ---------- */
 function show(id) {
   [
     'screen-intro','screen-quiz-info','screen-quiz',
@@ -313,6 +314,7 @@ function initIntro() {
   }
 }
 
+/* ---------- Globale Scores ---------- */
 let playerName = "";
 let totalPoints = 0;
 let quizPoints = 0;
@@ -440,15 +442,14 @@ function checkAnswer(i) {
 }
 
 /* ---------- Labyrinth ---------- */
-const maze = document.getElementById('maze');
-const ctx = maze.getContext('2d');
+let mazeCanvas = null;
+let mazeCtx = null;
 const mazeSize = 10;
-let cellSize;
+let cellSize = 0;
 let santa = { x: 0, y: 0 };
 let mazeTimerInterval = null;
 let mazeStart = 0;
 let mazeTime = 0;
-const mazeTimeLabel = document.getElementById('maze-time');
 
 const mazeMap = [
   [0,0,1,1,1,1,1,1,1,1],
@@ -464,9 +465,11 @@ const mazeMap = [
 ];
 
 function setupMazeCanvas() {
+  mazeCanvas = document.getElementById('maze');
+  mazeCtx = mazeCanvas.getContext('2d');
   const size = Math.min(360, window.innerWidth - 40);
-  maze.width = size;
-  maze.height = size;
+  mazeCanvas.width = size;
+  mazeCanvas.height = size;
   cellSize = size / mazeSize;
 }
 
@@ -476,11 +479,12 @@ function startMaze() {
   santa = { x: 0, y: 0 };
   mazeStart = performance.now();
   mazeTime = 0;
-  mazeTimeLabel.textContent = "Zeit: 0,00 s";
+  document.getElementById('maze-time').textContent = "Zeit: 0,00 s";
   if (mazeTimerInterval) clearInterval(mazeTimerInterval);
   mazeTimerInterval = setInterval(() => {
     mazeTime = (performance.now() - mazeStart) / 1000;
-    mazeTimeLabel.textContent = "Zeit: " + mazeTime.toFixed(2) + " s";
+    document.getElementById('maze-time').textContent =
+      "Zeit: " + mazeTime.toFixed(2) + " s";
   }, 100);
   drawMaze();
 }
@@ -492,24 +496,24 @@ function drawMaze() {
       const cx = x * cellSize;
       const cy = y * cellSize;
       if (v === 1) {
-        ctx.fillStyle = "#04131d";
-        ctx.fillRect(cx, cy, cellSize, cellSize);
+        mazeCtx.fillStyle = "#04131d";
+        mazeCtx.fillRect(cx, cy, cellSize, cellSize);
       } else {
-        ctx.fillStyle = "#06495b";
-        ctx.fillRect(cx, cy, cellSize, cellSize);
+        mazeCtx.fillStyle = "#06495b";
+        mazeCtx.fillRect(cx, cy, cellSize, cellSize);
       }
       if (v === 2) {
-        ctx.fillStyle = "#f1c40f";
-        ctx.fillRect(cx + cellSize*0.2, cy + cellSize*0.25, cellSize*0.6, cellSize*0.5);
+        mazeCtx.fillStyle = "#f1c40f";
+        mazeCtx.fillRect(cx + cellSize*0.2, cy + cellSize*0.25, cellSize*0.6, cellSize*0.5);
       }
     }
   }
   const sx = santa.x * cellSize + cellSize / 2;
   const sy = santa.y * cellSize + cellSize / 2;
-  ctx.fillStyle = "#e74c3c";
-  ctx.beginPath();
-  ctx.arc(sx, sy, cellSize * 0.3, 0, Math.PI * 2);
-  ctx.fill();
+  mazeCtx.fillStyle = "#e74c3c";
+  mazeCtx.beginPath();
+  mazeCtx.arc(sx, sy, cellSize * 0.3, 0, Math.PI * 2);
+  mazeCtx.fill();
 }
 
 function moveSanta(dx, dy) {
@@ -560,7 +564,7 @@ function startBellGame() {
   generateBellSequence();
   if (bellInterval) clearInterval(bellInterval);
   nextBellSymbol();
-  bellInterval = setInterval(nextBellSymbol, 550); // schnell: 0,55 s pro Symbol
+  bellInterval = setInterval(nextBellSymbol, 550);
 }
 
 function generateBellSequence() {
@@ -616,7 +620,6 @@ function pressBell() {
         `Fehlklick! -3 Punkte`;
     }
   } else {
-    // nach Spielende: weiter zu Schätzfragen-Info
     show('screen-guess-info');
   }
 }
@@ -625,8 +628,7 @@ function endBellGame() {
   if (bellInterval) clearInterval(bellInterval);
   bellFinished = true;
   totalPoints += bellPoints;
-  const res = document.getElementById('bell-result');
-  res.innerHTML =
+  document.getElementById('bell-result').innerHTML =
     `Glocken getroffen: <b>${bellHits}</b> von 3<br>` +
     `Fehlklicks: <b>${bellFalseClicks}</b><br>` +
     `Punkte im Glocken-Spiel: <b>${bellPoints}</b>`;
@@ -664,4 +666,220 @@ function renderGuessQuestion() {
     `Schätzfrage ${guessIndex + 1} von ${guesses.length}`;
   document.getElementById('guess-question').textContent = g.q;
   document.getElementById('guessInput').value = "";
-  documen
+  document.getElementById('guess-result').textContent = "";
+  document.getElementById('guessBtn').textContent = "Antwort prüfen";
+  guessState = 'question';
+}
+
+function submitGuess() {
+  const g = guesses[guessIndex];
+  if (guessState === 'question') {
+    const raw = document.getElementById('guessInput').value.trim().replace(',', '.');
+    const val = parseFloat(raw);
+    if (isNaN(val)) {
+      alert("Bitte eine Zahl eingeben.");
+      return;
+    }
+    const diff = Math.abs(val - g.correct);
+    const diffPercent = (diff / g.correct) * 100;
+    let pts = 5;
+    if (diffPercent <= 5) pts = 40;
+    else if (diffPercent <= 10) pts = 30;
+    else if (diffPercent <= 20) pts = 20;
+    else if (diffPercent <= 30) pts = 10;
+    guessPoints += pts;
+    totalPoints += pts;
+    document.getElementById('guess-result').innerHTML =
+      `Deine Schätzung: <b>${val} ${g.unit}</b><br>` +
+      `Richtige Antwort: <b>${g.correct} ${g.unit}</b><br>` +
+      `Abweichung: <b>${diffPercent.toFixed(1)}%</b><br>` +
+      `Punkte: <b>${pts}</b>`;
+    guessState = 'answer';
+    document.getElementById('guessBtn').textContent =
+      (guessIndex < guesses.length - 1) ? "Nächste Schätzfrage ▶️" : "Weiter zum Code ▶️";
+  } else {
+    if (guessIndex < guesses.length - 1) {
+      guessIndex++;
+      renderGuessQuestion();
+    } else {
+      show('screen-code-info');
+    }
+  }
+}
+
+/* ---------- Code-Spiel ---------- */
+const codeSymbols = ["🎄","🎁","⭐","🎅","🔔"];
+let secretCode = [];
+let codeAttempt = 0;
+const maxCodeAttempts = 5;
+let codeSolved = false;
+
+function fillCodeSelects() {
+  ['codePos1','codePos2','codePos3'].forEach(id => {
+    const sel = document.getElementById(id);
+    sel.innerHTML = "";
+    codeSymbols.forEach(sym => {
+      const opt = document.createElement('option');
+      opt.value = sym;
+      opt.textContent = sym;
+      sel.appendChild(opt);
+    });
+  });
+}
+
+function startCodeGame() {
+  show('screen-code');
+  fillCodeSelects();
+  const shuffled = [...codeSymbols].sort(() => Math.random() - 0.5);
+  secretCode = shuffled.slice(0,3);
+  codeAttempt = 0;
+  codeSolved = false;
+  document.getElementById('code-log').innerHTML = "";
+  document.getElementById('code-result').textContent = "";
+  document.getElementById('codeBtn').textContent = "Kombination prüfen";
+  document.getElementById('codeBtn').onclick = submitCodeGuess;
+  document.getElementById('code-progress').textContent =
+    `Versuch 1 von ${maxCodeAttempts}`;
+}
+
+function submitCodeGuess() {
+  if (codeSolved || codeAttempt >= maxCodeAttempts) return;
+
+  const g1 = document.getElementById('codePos1').value;
+  const g2 = document.getElementById('codePos2').value;
+  const g3 = document.getElementById('codePos3').value;
+  const guess = [g1,g2,g3];
+
+  codeAttempt++;
+
+  let exact = 0;
+  let partial = 0;
+
+  const secretCopy = [...secretCode];
+  const guessCopy = [...guess];
+
+  for (let i = 0; i < 3; i++) {
+    if (guessCopy[i] === secretCopy[i]) {
+      exact++;
+      secretCopy[i] = null;
+      guessCopy[i] = null;
+    }
+  }
+  for (let i = 0; i < 3; i++) {
+    if (guessCopy[i] !== null) {
+      const idx = secretCopy.indexOf(guessCopy[i]);
+      if (idx !== -1) {
+        partial++;
+        secretCopy[idx] = null;
+        guessCopy[i] = null;
+      }
+    }
+  }
+
+  const log = document.getElementById('code-log');
+  const row = document.createElement('div');
+  row.className = 'code-row';
+  row.textContent =
+    `Versuch ${codeAttempt}: ${g1} ${g2} ${g3} → Richtig: ${exact}, Richtige Symbol(e) falsche Position: ${partial}`;
+  log.appendChild(row);
+
+  if (exact === 3) {
+    codeSolved = true;
+    if (codeAttempt <= 2) codePoints = 40;
+    else if (codeAttempt <= 4) codePoints = 25;
+    else codePoints = 10;
+    totalPoints += codePoints;
+    document.getElementById('code-result').innerHTML =
+      `Code geknackt! 🎉<br>Punkte im Code-Spiel: <b>${codePoints}</b>`;
+    document.getElementById('codeBtn').textContent =
+      "Weiter zur 10-Sekunden-Challenge ▶️";
+    document.getElementById('codeBtn').onclick = () => show('screen-timer-info');
+  } else if (codeAttempt >= maxCodeAttempts) {
+    codePoints = 0;
+    document.getElementById('code-result').innerHTML =
+      `Code nicht geknackt. 😈<br>Punkte im Code-Spiel: <b>0</b>`;
+    document.getElementById('codeBtn').textContent =
+      "Weiter zur 10-Sekunden-Challenge ▶️";
+    document.getElementById('codeBtn').onclick = () => show('screen-timer-info');
+  } else {
+    document.getElementById('code-progress').textContent =
+      `Versuch ${codeAttempt + 1} von ${maxCodeAttempts}`;
+  }
+}
+
+/* ---------- 10-Sekunden-Challenge ---------- */
+let timerRunning = false;
+let timerStartTime = 0;
+let timerTime = 0;
+
+function startTimerGame() {
+  show('screen-timer');
+  timerRunning = false;
+  timerTime = 0;
+  document.getElementById('timer-info').textContent =
+    "Drücke „Start“, zähle im Kopf und drücke „Stopp“ möglichst genau bei 10,00 s.";
+  document.getElementById('timer-result').textContent = "";
+  document.getElementById('timerStartBtn').disabled = false;
+  document.getElementById('timerStopBtn').disabled = true;
+  document.getElementById('timer-next').innerHTML = "";
+}
+
+function timerStart() {
+  if (timerRunning) return;
+  timerRunning = true;
+  timerStartTime = performance.now();
+  document.getElementById('timerStartBtn').disabled = true;
+  document.getElementById('timerStopBtn').disabled = false;
+  document.getElementById('timer-info').textContent =
+    "Läuft... Stopp drücken, wenn du glaubst, dass 10,00 s vorbei sind.";
+}
+
+function timerStop() {
+  if (!timerRunning) return;
+  timerRunning = false;
+  timerTime = (performance.now() - timerStartTime) / 1000;
+  document.getElementById('timerStopBtn').disabled = true;
+  const diff = Math.abs(timerTime - 10);
+  let pts = 10;
+  if (diff <= 0.05) pts = 50;
+  else if (diff <= 0.20) pts = 40;
+  else if (diff <= 0.50) pts = 30;
+  else if (diff <= 1.00) pts = 20;
+
+  timerPoints = pts;
+  totalPoints += pts;
+
+  document.getElementById('timer-result').innerHTML =
+    `Deine Zeit: <b>${timerTime.toFixed(2)} s</b><br>` +
+    `Abweichung von 10,00 s: <b>${diff.toFixed(2)} s</b><br>` +
+    `Punkte in der 10-Sekunden-Challenge: <b>${timerPoints}</b>`;
+
+  document.getElementById('timer-next').innerHTML =
+    `<button onclick="finishGame()">Weiter zum Ergebnis ▶️</button>`;
+}
+
+/* ---------- Ergebnis ---------- */
+function finishGame() {
+  show('screen-result');
+  attempts++;
+  localStorage.setItem('advent_attempts', String(attempts));
+
+  const attemptText = (attempts === 1)
+    ? "Dies war dein erster offizieller Versuch."
+    : "Hinweis: Nur dein erster Versuch zählt.";
+
+  document.getElementById('resultPoints').innerHTML =
+    `${playerName}, du hast insgesamt <b>${totalPoints}</b> Punkte!<br><br>` +
+    `Quiz: <b>${quizPoints}</b> Punkte (Fehler: ${wrongAnswers})<br>` +
+    `Labyrinth: <b>${labyrinthPoints}</b> Punkte<br>` +
+    `Glocken-Spiel: <b>${bellPoints}</b> Punkte<br>` +
+    `Schätzfragen: <b>${guessPoints}</b> Punkte<br>` +
+    `Code-Spiel: <b>${codePoints}</b> Punkte<br>` +
+    `10-Sekunden-Challenge: <b>${timerPoints}</b> Punkte<br><br>` +
+    `Anzahl der Versuche auf diesem Gerät: <b>${attempts}</b><br>` +
+    attemptText;
+}
+</script>
+
+</body>
+</html>
