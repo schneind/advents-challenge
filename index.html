@@ -105,7 +105,7 @@
     <h1>🎄 Advents-Challenge</h1>
     <p id="attemptInfo" style="color:#ffdddd; font-weight:600; display:none; text-align:center;"></p>
     <p>Name eingeben:</p>
-    <input id="playerName" placeholder="Janine &lt;3" />
+    <input id="playerName" placeholder="z. B. Janine <3 <3" />
     <div class="center">
       <button onclick="goQuizInfo()">Weiter zum Quiz ▶️</button>
     </div>
@@ -269,27 +269,6 @@
     <div class="center" id="timer-next" style="margin-top:10px;"></div>
   </section>
 
-  <!-- Song-Quiz: Info -->
-  <section id="screen-song-info" class="hidden">
-    <h2>🎵 Weihnachts-Song-Quiz – Infos</h2>
-    <p class="center">
-      Erkenne bekannte Weihnachtslieder nur anhand von Hinweisen und Titel-Auswahl.<br>
-      Keine Musik – nur dein Wissen zählt.
-    </p>
-    <div class="center">
-      <button onclick="startSongGame()">Song-Quiz starten ▶️</button>
-    </div>
-  </section>
-
-  <!-- Song-Quiz -->
-  <section id="screen-song" class="hidden">
-    <h2>🎵 Weihnachts-Song-Quiz</h2>
-    <p id="song-progress" class="center"></p>
-    <h3 id="song-question"></h3>
-    <div id="song-answers" class="center"></div>
-    <p id="song-result" class="center" style="margin-top:10px;"></p>
-  </section>
-
   <!-- Geschenk-Bomben: Info -->
   <section id="screen-bomb-info" class="hidden">
     <h2>🎁 Bomben-Geschenke – Infos</h2>
@@ -336,7 +315,6 @@ function show(id) {
     'screen-guess-info','screen-guess',
     'screen-code-info','screen-code',
     'screen-timer-info','screen-timer',
-    'screen-song-info','screen-song',
     'screen-bomb-info','screen-bomb',
     'screen-result'
   ].forEach(s => {
@@ -377,7 +355,6 @@ let bellPoints = 0;
 let guessPoints = 0;
 let codePoints = 0;
 let timerPoints = 0;
-let songPoints = 0;
 let bombPoints = 0;
 
 const QUIZ_MAX = 10 * 10;   // 10 Fragen * 10 Punkte
@@ -386,7 +363,6 @@ const BELL_MAX = 30;        // 3 Glocken * 10
 const GUESS_MAX = 8 * 40;   // 8 Schätzfragen
 const CODE_MAX = 40;
 const TIMER_MAX = 50;
-const SONG_MAX = 3 * 20;    // 3 Songfragen *20
 const BOMB_MAX = 50;        // 5*5 + 20 Bonus
 
 function goQuizInfo() {
@@ -403,7 +379,6 @@ function goQuizInfo() {
   guessPoints = 0;
   codePoints = 0;
   timerPoints = 0;
-  songPoints = 0;
   bombPoints = 0;
   show('screen-quiz-info');
 }
@@ -912,77 +887,7 @@ function timerStop() {
     `Punkte in der 10-Sekunden-Challenge: <b>${timerPoints}</b>`;
 
   document.getElementById('timer-next').innerHTML =
-    `<button onclick="show('screen-song-info')">Weiter zum Song-Quiz ▶️</button>`;
-}
-
-/* ---------- Song-Quiz ---------- */
-const songQuiz = [
-  {
-    q: "Welches Weihnachtslied wird im Englischen mit Glöckchenfahrten im Schnee verbunden und beginnt mit „Jingle…“?",
-    a: ["Jingle Bells","Silent Night","Last Christmas","All I Want for Christmas Is You","White Christmas"],
-    c: 0
-  },
-  {
-    q: "Welcher Weihnachtssong stammt von Wham! und handelt von einer unglücklichen Liebe zu Weihnachten?",
-    a: ["Last Christmas","Do They Know It's Christmas?","Fairytale of New York","Happy Xmas (War Is Over)","Driving Home for Christmas"],
-    c: 0
-  },
-  {
-    q: "Welches berühmte Lied beginnt im Deutschen mit „Stille Nacht…“?",
-    a: ["O Tannenbaum","Stille Nacht, heilige Nacht","Leise rieselt der Schnee","O du fröhliche","Kling, Glöckchen"],
-    c: 1
-  }
-];
-
-let songIndex = 0;
-let songFinished = false;
-
-function startSongGame() {
-  show('screen-song');
-  songIndex = 0;
-  songPoints = 0;
-  songFinished = false;
-  document.getElementById('song-result').textContent = "";
-  renderSongQuestion();
-}
-
-function renderSongQuestion() {
-  const qObj = songQuiz[songIndex];
-  document.getElementById('song-progress').textContent =
-    `Song-Frage ${songIndex + 1} von ${songQuiz.length}`;
-  document.getElementById('song-question').textContent = qObj.q;
-  const answersDiv = document.getElementById('song-answers');
-  answersDiv.innerHTML = '';
-  qObj.a.forEach((ans, i) => {
-    const btn = document.createElement('button');
-    btn.textContent = ans;
-    btn.onclick = () => checkSongAnswer(i);
-    answersDiv.appendChild(btn);
-  });
-}
-
-function checkSongAnswer(i) {
-  const qObj = songQuiz[songIndex];
-  const res = document.getElementById('song-result');
-  if (i === qObj.c) {
-    songPoints += 20;
-    totalPoints += 20;
-    res.textContent = "Richtig! +20 Punkte.";
-  } else {
-    res.textContent = "Falsch – keine Punkte.";
-  }
-  songIndex++;
-  if (songIndex < songQuiz.length) {
-    setTimeout(() => {
-      res.textContent = "";
-      renderSongQuestion();
-    }, 800);
-  } else {
-    songFinished = true;
-    setTimeout(() => {
-      show('screen-bomb-info');
-    }, 800);
-  }
+    `<button onclick="show('screen-bomb-info')">Weiter zum Bomben-Spiel ▶️</button>`;
 }
 
 /* ---------- Geschenk-Bomben-Spiel ---------- */
@@ -1064,7 +969,6 @@ function finishGame() {
     `Schätzfragen: <b>${guessPoints}</b> / ${GUESS_MAX} Punkte<br>` +
     `Code-Spiel: <b>${codePoints}</b> / ${CODE_MAX} Punkte<br>` +
     `10-Sekunden-Challenge: <b>${timerPoints}</b> / ${TIMER_MAX} Punkte<br>` +
-    `Song-Quiz: <b>${songPoints}</b> / ${SONG_MAX} Punkte<br>` +
     `Bomben-Spiel: <b>${bombPoints}</b> / ${BOMB_MAX} Punkte<br><br>` +
     `Anzahl der Versuche auf diesem Gerät: <b>${attempts}</b><br>` +
     attemptText;
