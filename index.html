@@ -1,100 +1,434 @@
-<!DOCTYPE html><html lang="de">
+<!DOCTYPE html>
+<html lang="de">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Advents-Challenge Finale</title>
   <style>
     * { box-sizing: border-box; }
-    body { font-family: system-ui; background: linear-gradient(135deg,#b31217,#1a2a6c); margin:0; padding:16px; color:#fff; }
-    .card { max-width:680px; margin:0 auto; background:rgba(0,0,0,0.25); padding:20px; border-radius:18px; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(135deg,#b31217,#1a2a6c);
+      margin:0;
+      padding:16px;
+      color:#fff;
+    }
+    .card {
+      max-width:680px;
+      margin:0 auto;
+      background:rgba(0,0,0,0.25);
+      padding:20px;
+      border-radius:18px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.35);
+    }
     .hidden { display:none; }
-    button { padding:12px 20px; border:none; border-radius:12px; cursor:pointer; background:#ffd166; margin:6px; font-weight:600; }
-    input { width:100%; padding:10px; border-radius:10px; border:none; margin:8px 0; }
-    #maze { display:block; margin:0 auto; background:#001018; border-radius:12px; }
+    h1,h2,h3 { text-align:center; margin:0 0 10px 0; }
+    p { margin:6px 0; }
+    button {
+      padding:12px 20px;
+      border:none;
+      border-radius:12px;
+      cursor:pointer;
+      background:#ffd166;
+      margin:6px;
+      font-weight:600;
+      box-shadow:0 4px 12px rgba(0,0,0,0.3);
+    }
+    input {
+      width:100%;
+      padding:10px;
+      border-radius:10px;
+      border:none;
+      margin:8px 0;
+      font-size:16px;
+    }
+    #maze {
+      display:block;
+      margin:0 auto 12px;
+      background:#001018;
+      border-radius:12px;
+      border:2px solid #fff;
+      max-width:100%;
+    }
   </style>
 </head>
-<body><!-- Passwort --><div id="pwScreen" style="text-align:center; padding:20px;">
+<body>
+
+<!-- Passwort-Screen -->
+<div id="pwScreen" style="text-align:center; padding:40px 20px;">
   <h2>🔐 Passwort eingeben</h2>
   <input id="pwInput" type="password" placeholder="Passwort" />
   <button onclick="checkPW()">Weiter</button>
-  <p id="pwError" style="color:#ffaaaa; display:none;">Falsch!</p>
-</div><div class="card">  <!-- Intro -->  <section id="screen-intro" class="hidden">
+  <p id="pwError" style="color:#ffaaaa; display:none; margin-top:8px;">Falsches Passwort!</p>
+</div>
+
+<div class="card">
+
+  <!-- Intro -->
+  <section id="screen-intro" class="hidden">
     <h1>🎄 Advents-Challenge</h1>
     <p id="attemptInfo" style="color:#ffdddd; font-weight:600; display:none; text-align:center;"></p>
     <p>Name eingeben:</p>
-    <input id="playerName" />
-    <button onclick="startQuiz()">Start ▶️</button>
-  </section>  <!-- Quiz -->  <section id="screen-quiz" class="hidden">
+    <input id="playerName" placeholder="z. B. Marco" />
+    <div style="text-align:center;">
+      <button onclick="startQuiz()">Start ▶️</button>
+    </div>
+  </section>
+
+  <!-- Quiz -->
+  <section id="screen-quiz" class="hidden">
     <h2>❄️ Quiz</h2>
     <p id="quiz-progress" style="text-align:center"></p>
     <h3 id="quiz-question"></h3>
     <div id="quiz-answers" style="text-align:center"></div>
-  </section>  <!-- Labyrinth -->  <section id="screen-maze" class="hidden">
+  </section>
+
+  <!-- Labyrinth -->
+  <section id="screen-maze" class="hidden">
     <h2>🎅 Nikolaus im Labyrinth</h2>
+    <p style="text-align:center;">Bring den Nikolaus zur goldenen Geschenk-Kiste 🎁</p>
     <canvas id="maze"></canvas>
     <div style="text-align:center;">
-      <button onclick="moveSanta(0,-1)">⬆️</button><br>
+      <button onclick="moveSanta(0,-1)">⬆️</button><br />
       <button onclick="moveSanta(-1,0)">⬅️</button>
-      <button onclick="moveSanta(1,0)">➡️</button><br>
+      <button onclick="moveSanta(1,0)">➡️</button><br />
       <button onclick="moveSanta(0,1)">⬇️</button>
     </div>
-  </section>  <!-- Schätzfragen -->  <section id="screen-guess" class="hidden">
-    <h2>📏 Schätzfrage</h2>
+  </section>
+
+  <!-- Schätzfragen -->
+  <section id="screen-guess" class="hidden">
+    <h2>📏 Schätzfragen</h2>
+    <p id="guess-progress" style="text-align:center;"></p>
     <h3 id="guess-question"></h3>
-    <input id="guessInput" type="number" placeholder="Zahl eingeben" />
-    <button onclick="submitGuess()">Antwort prüfen</button>
-    <p id="guess-result"></p>
-  </section>  <!-- Ergebnis -->  <section id="screen-result" class="hidden">
+    <input id="guessInput" type="number" placeholder="Zahl eingeben (nur Zahl, ohne Einheit)" />
+    <div style="text-align:center;">
+      <button id="guessBtn" onclick="submitGuess()">Antwort prüfen</button>
+    </div>
+    <p id="guess-result" style="margin-top:10px;"></p>
+  </section>
+
+  <!-- Ergebnis -->
+  <section id="screen-result" class="hidden">
     <h2>🏆 Ergebnis</h2>
     <p id="resultPoints" style="text-align:center;"></p>
-    <p style="text-align:center;">📸 Screenshot machen und in die Gruppe schicken!</p>
-    <button onclick="restartGame()">Neu starten 🔁</button>
-  </section></div><script>
-/* Passwort */
-function checkPW(){ let pw=document.getElementById('pwInput').value.trim(); if(pw==='HOTMarco'){ document.getElementById('pwScreen').style.display='none'; initIntro(); } else document.getElementById('pwError').style.display='block'; }
+    <p style="text-align:center; margin-top:12px;">
+      📸 Mach einen Screenshot von diesem Bildschirm<br />
+      und schick ihn in die Gruppe. Nur dein erster Versuch zählt!
+    </p>
+    <div style="text-align:center; margin-top:10px;">
+      <button onclick="restartGame()">Neu starten 🔁</button>
+    </div>
+  </section>
 
-let attempts = Number(localStorage.getItem('attempts')||0);
-function initIntro(){
-  document.getElementById('screen-intro').classList.remove('hidden');
-  if(attempts>0){ document.getElementById('attemptInfo').style.display='block'; document.getElementById('attemptInfo').innerText='Hinweis: Auf diesem Gerät wurde schon gespielt. Nur der erste Versuch zählt.'; }
+</div>
+
+<script>
+/* -------- Passwort & Intro -------- */
+function checkPW() {
+  const pw = document.getElementById('pwInput').value.trim();
+  if (pw === 'HOTMarco') {
+    document.getElementById('pwScreen').style.display = 'none';
+    initIntro();
+  } else {
+    document.getElementById('pwError').style.display = 'block';
+  }
 }
 
-/* Quiz */
-let playerName="";
-let totalPoints=0;
-let wrongAnswers=0;
-const quiz=[
- {q:"Wie sagt man 'Frohe Weihnachten' auf Spanisch?",a:["Feliz Año","Buenas Fiestas","Feliz Navidad","Navidad Alegre","Felices Días"],c:2},
- {q:"In welchem Land heißt der Weihnachtsmann 'Joulupukki'?",a:["Schweden","Finnland","Estland","Norwegen","Island"],c:1},
- {q:"Wo isst man Weihnachten gerne KFC?",a:["Japan","USA","Australien","Südkorea","Brasilien"],c:0},
- {q:"Woher stammt der Adventskalender?",a:["Frankreich","Schweiz","Deutschland","GB","Dänemark"],c:2},
- {q:"Wer ist gleich nochmal HOT?",a:["Bene","Simon","Der Weihnachtsmann","Der Grinch","Marco"],c:4}
+let attempts = Number(localStorage.getItem('advent_attempts') || '0');
+
+function initIntro() {
+  show('screen-intro');
+  if (attempts > 0) {
+    const info = document.getElementById('attemptInfo');
+    info.style.display = 'block';
+    info.textContent = 'Hinweis: Auf diesem Gerät wurde schon gespielt. Für die Wertung zählt nur dein erster Versuch.';
+  }
+}
+
+function show(id) {
+  ['screen-intro','screen-quiz','screen-maze','screen-guess','screen-result'].forEach(s => {
+    const el = document.getElementById(s);
+    if (el) el.classList.add('hidden');
+  });
+  const el = document.getElementById(id);
+  if (el) el.classList.remove('hidden');
+}
+
+/* -------- Quiz -------- */
+let playerName = '';
+let totalPoints = 0;
+let wrongAnswers = 0;
+
+const quiz = [
+  {
+    q: "Wie sagt man 'Frohe Weihnachten' auf Spanisch?",
+    a: ["Feliz Año", "Buenas Fiestas", "Feliz Navidad", "Navidad Alegre", "Felices Días"],
+    c: 2
+  },
+  {
+    q: "In welchem Land heißt der Weihnachtsmann 'Joulupukki'?",
+    a: ["Schweden", "Finnland", "Estland", "Norwegen", "Island"],
+    c: 1
+  },
+  {
+    q: "In welchem Land isst man an Weihnachten gerne KFC?",
+    a: ["Japan", "USA", "Australien", "Südkorea", "Brasilien"],
+    c: 0
+  },
+  {
+    q: "Woher stammt der Adventskalender mit Türchen ursprünglich?",
+    a: ["Frankreich", "Schweiz", "Deutschland", "Großbritannien", "Dänemark"],
+    c: 2
+  },
+  {
+    q: "Wer ist gleich nochmal HOT?",
+    a: ["Bene", "Simon", "Der Weihnachtsmann", "Der Grinch", "Marco"],
+    c: 4
+  }
 ];
-let qi=0;
 
-function startQuiz(){ playerName=document.getElementById('playerName').value.trim(); if(!playerName){alert('Name fehlt');return;} show('screen-quiz'); qi=0; totalPoints=0; wrongAnswers=0; loadQ(); }
-function loadQ(){ let q=quiz[qi]; document.getElementById('quiz-progress').innerText=`Frage ${qi+1} von ${quiz.length}`; document.getElementById('quiz-question').innerText=q.q; let d=document.getElementById('quiz-answers'); d.innerHTML=''; q.a.forEach((ans,i)=>{ let b=document.createElement('button'); b.innerText=ans; b.onclick=()=>checkA(i); d.appendChild(b); }); }
-function checkA(i){ if(i===quiz[qi].c){ totalPoints+=10; qi++; qi<quiz.length?loadQ():startMaze(); } else { wrongAnswers++; totalPoints-=1; alert('Falsch! -1 Punkt'); }}
+let qi = 0;
 
-/* Labyrinth 10x10 */
-let maze=document.getElementById('maze'); let ctx=maze.getContext('2d'); let size=10; let cs;
-let map=[
-[1,0,1,1,1,1,1,1,1,1],
-[1,0,0,0,0,1,0,0,0,1],
-[1,1,1,0,1,1,0,1,0,1],
-[1,0,0,0,0,0,0,1,0,1],
-[1,0,1,1,1,1,0,1,0,1],
-[1,0,0,0,0,0,0,1,0,1],
-[1,1,1,1,1,1,0,1,0,1],
-[1,0,0,0,0,0,0,1,0,1],
-[1,0,1,1,1,1,1,1,0,1],
-[1,0,0,0,0,0,0,1,0,2]
+function startQuiz() {
+  const name = document.getElementById('playerName').value.trim();
+  if (!name) {
+    alert('Bitte gib deinen Namen ein.');
+    return;
+  }
+  playerName = name;
+  totalPoints = 0;
+  wrongAnswers = 0;
+  qi = 0;
+  show('screen-quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const qObj = quiz[qi];
+  document.getElementById('quiz-progress').textContent =
+    `Frage ${qi + 1} von ${quiz.length}`;
+  document.getElementById('quiz-question').textContent = qObj.q;
+  const answersDiv = document.getElementById('quiz-answers');
+  answersDiv.innerHTML = '';
+  qObj.a.forEach((ans, i) => {
+    const btn = document.createElement('button');
+    btn.textContent = ans;
+    btn.onclick = () => checkAnswer(i);
+    answersDiv.appendChild(btn);
+  });
+}
+
+function checkAnswer(i) {
+  const qObj = quiz[qi];
+  if (i === qObj.c) {
+    totalPoints += 10;
+    qi++;
+    if (qi < quiz.length) {
+      renderQuestion();
+    } else {
+      startMaze();
+    }
+  } else {
+    wrongAnswers++;
+    totalPoints -= 1;
+    alert('Falsch! -1 Punkt');
+  }
+}
+
+/* -------- Labyrinth 10x10 -------- */
+const maze = document.getElementById('maze');
+const ctx = maze.getContext('2d');
+const mazeSize = 10;
+let cellSize;
+
+const mazeMap = [
+  [1,0,1,1,1,1,1,1,1,1],
+  [1,0,0,0,0,1,0,0,0,1],
+  [1,1,1,0,1,1,0,1,0,1],
+  [1,0,0,0,0,0,0,1,0,1],
+  [1,0,1,1,1,1,0,1,0,1],
+  [1,0,0,0,0,0,0,1,0,1],
+  [1,1,1,1,1,1,0,1,0,1],
+  [1,0,0,0,0,0,0,1,0,1],
+  [1,0,1,1,1,1,1,1,0,1],
+  [1,0,0,0,0,0,0,1,0,2]
 ];
-let santa={x:0,y:0};
-let mazeStart;
 
-function startMaze(){ show('screen-maze'); setup(); santa={x:0,y:0}; mazeStart=performance.now(); draw(); }
-function setup(){ let s=Math.min(360,window.innerWidth-40); maze.width=s; maze.height=s; cs=s/size; }
-function draw(){ for(let y=0;y<size;y++){ for(let x=0;x<size;x++){ ctx.fillStyle=map[y][x]===1?'#022':'#044'; ctx.fillRect(x*cs,y*cs,cs,cs); if(map[y][x]===2){ ctx.fillStyle='gold'; ctx.fillRect(x*cs+cs*0.2,y*cs+cs*0.2,cs*0.6,cs*0.6); }} }
- ctx.fillStyle='red'; ctx.beginPath(); ctx.arc(santa.x*cs+cs/2,santa.y*cs+cs/2,cs*0.3,0,6.28); ctx.fill(); }
-function moveSanta(dx,dy){ let nx=santa.x+dx,ny=santa.y+dy; if(nx<0||ny<0||nx>=size||ny>=size)return; if(map[ny][nx]===1)return; santa={x:nx,y:ny}; if(map[ny][nx]===2){ let t=(performance.now()-maze
+let santa = { x: 0, y: 0 };
+let mazeStart = 0;
+
+function setupMazeCanvas() {
+  const size = Math.min(360, window.innerWidth - 40);
+  maze.width = size;
+  maze.height = size;
+  cellSize = size / mazeSize;
+}
+
+function startMaze() {
+  show('screen-maze');
+  setupMazeCanvas();
+  santa = { x: 0, y: 0 };
+  mazeStart = performance.now();
+  drawMaze();
+}
+
+function drawMaze() {
+  for (let y = 0; y < mazeSize; y++) {
+    for (let x = 0; x < mazeSize; x++) {
+      const v = mazeMap[y][x];
+      const cx = x * cellSize;
+      const cy = y * cellSize;
+
+      if (v === 1) {
+        ctx.fillStyle = '#022';
+      } else {
+        ctx.fillStyle = '#044';
+      }
+      ctx.fillRect(cx, cy, cellSize, cellSize);
+
+      if (v === 2) {
+        ctx.fillStyle = 'gold';
+        ctx.fillRect(cx + cellSize*0.2, cy + cellSize*0.2, cellSize*0.6, cellSize*0.6);
+      }
+    }
+  }
+  // Santa
+  ctx.fillStyle = 'red';
+  ctx.beginPath();
+  ctx.arc(
+    santa.x * cellSize + cellSize / 2,
+    santa.y * cellSize + cellSize / 2,
+    cellSize * 0.3,
+    0,
+    Math.PI * 2
+  );
+  ctx.fill();
+}
+
+function moveSanta(dx, dy) {
+  const nx = santa.x + dx;
+  const ny = santa.y + dy;
+  if (nx < 0 || ny < 0 || nx >= mazeSize || ny >= mazeSize) return;
+  if (mazeMap[ny][nx] === 1) return;
+  santa.x = nx;
+  santa.y = ny;
+  if (mazeMap[ny][nx] === 2) {
+    const t = (performance.now() - mazeStart) / 1000;
+    if (t <= 10) totalPoints += 40;
+    else if (t <= 20) totalPoints += 30;
+    else if (t <= 30) totalPoints += 20;
+    else totalPoints += 10;
+    startGuessGame();
+  }
+  drawMaze();
+}
+
+window.addEventListener('resize', () => {
+  if (!document.getElementById('screen-maze').classList.contains('hidden')) {
+    setupMazeCanvas();
+    drawMaze();
+  }
+});
+
+/* -------- Schätzfragen -------- */
+const guesses = [
+  { q: "Wie viele Christbäume wurden 2024 in Deutschland verkauft? (in Bäumen)", correct: 23000000, unit: "Bäume" },
+  { q: "Wie viel Truthahnfleisch wurde 2024 in den USA verzehrt? (in Tonnen)", correct: 228000, unit: "Tonnen" },
+  { q: "Wie viele Liter Glühwein trinken die Deutschen pro Jahr? (in Litern)", correct: 50000000, unit: "Liter" },
+  { q: "Wie viele Pakete liefert DHL im Dezember in Deutschland aus? (in Paketen)", correct: 675000000, unit: "Pakete" },
+  { q: "Wie viele Weihnachtsmärkte gibt es in Deutschland? (Anzahl)", correct: 2500, unit: "Märkte" },
+  { q: "Wie viele Schoko-Weihnachtsmänner werden in Deutschland pro Jahr produziert? (in Stück)", correct: 151000000, unit: "Stück" },
+  { q: "Wie viel Geld gibt eine Person in Deutschland im Schnitt für Weihnachten aus? (in Euro pro Person)", correct: 550, unit: "Euro" }
+];
+
+let guessIndex = 0;
+let guessState = 'question'; // 'question' oder 'answer'
+
+function startGuessGame() {
+  show('screen-guess');
+  guessIndex = 0;
+  guessState = 'question';
+  document.getElementById('guessBtn').textContent = 'Antwort prüfen';
+  document.getElementById('guess-result').textContent = '';
+  renderGuessQuestion();
+}
+
+function renderGuessQuestion() {
+  const g = guesses[guessIndex];
+  document.getElementById('guess-progress').textContent =
+    `Schätzfrage ${guessIndex + 1} von ${guesses.length}`;
+  document.getElementById('guess-question').textContent = g.q;
+  document.getElementById('guessInput').value = '';
+  document.getElementById('guess-result').textContent = '';
+  guessState = 'question';
+  document.getElementById('guessBtn').textContent = 'Antwort prüfen';
+}
+
+function submitGuess() {
+  const g = guesses[guessIndex];
+
+  if (guessState === 'question') {
+    const val = parseFloat(document.getElementById('guessInput').value.replace(',', '.'));
+    if (isNaN(val)) {
+      alert('Bitte eine Zahl eingeben.');
+      return;
+    }
+
+    const diff = Math.abs(val - g.correct);
+    const diffPercent = (diff / g.correct) * 100;
+
+    let pts = 5;
+    if (diffPercent <= 5) pts = 40;
+    else if (diffPercent <= 10) pts = 30;
+    else if (diffPercent <= 20) pts = 20;
+    else if (diffPercent <= 30) pts = 10;
+
+    totalPoints += pts;
+
+    const res = document.getElementById('guess-result');
+    res.innerHTML =
+      `Deine Schätzung: <strong>${val.toLocaleString('de-DE')} ${g.unit}</strong><br>` +
+      `Richtige Antwort: <strong>${g.correct.toLocaleString('de-DE')} ${g.unit}</strong><br>` +
+      `Abweichung: ca. <strong>${diffPercent.toFixed(1)}%</strong><br>` +
+      `Punkte für diese Frage: <strong>${pts}</strong>`;
+
+    guessState = 'answer';
+    document.getElementById('guessBtn').textContent =
+      (guessIndex < guesses.length - 1) ? 'Nächste Schätzfrage ▶️' : 'Zum Ergebnis ▶️';
+
+  } else {
+    // Weiter zur nächsten Frage oder Ergebnis
+    if (guessIndex < guesses.length - 1) {
+      guessIndex++;
+      renderGuessQuestion();
+    } else {
+      finishGame();
+    }
+  }
+}
+
+/* -------- Ergebnis -------- */
+function finishGame() {
+  show('screen-result');
+
+  attempts++;
+  localStorage.setItem('advent_attempts', String(attempts));
+
+  const attemptText = (attempts === 1)
+    ? "Dies war dein erster offizieller Versuch."
+    : "Hinweis: Für die Wertung zählt nur dein erster Versuch auf diesem Gerät.";
+
+  document.getElementById('resultPoints').innerHTML =
+    `${playerName}, du hast insgesamt <strong>${totalPoints}</strong> Punkte!<br>` +
+    `Falsche Antworten im Quiz: <strong>${wrongAnswers}</strong>.<br><br>` +
+    `<strong>${attemptText}</strong>`;
+}
+
+function restartGame() {
+  location.reload();
+}
+</script>
+
+</body>
+</html>
