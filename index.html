@@ -44,7 +44,7 @@
     }
     #maze {
       display:block;
-      margin:0 auto 12px;
+      margin:0 auto 8px;
       background:#001018;
       border-radius:12px;
       border:2px solid #fff;
@@ -86,7 +86,7 @@
   <!-- Labyrinth -->
   <section id="screen-maze" class="hidden">
     <h2>🎅 Nikolaus im Labyrinth</h2>
-    <p style="text-align:center;">Bring den Nikolaus zur goldenen Geschenk-Kiste 🎁</p>
+    <p id="maze-time" style="text-align:center; margin-bottom:4px;">Zeit: 0,00 s</p>
     <canvas id="maze"></canvas>
     <div style="text-align:center;">
       <button onclick="moveSanta(0,-1)">⬆️</button><br />
@@ -101,7 +101,10 @@
     <h2>📏 Schätzfragen</h2>
     <p id="guess-progress" style="text-align:center;"></p>
     <h3 id="guess-question"></h3>
-    <input id="guessInput" type="number" placeholder="Zahl eingeben (nur Zahl, ohne Einheit)" />
+    <p style="font-size:14px; opacity:0.9;">
+      Gib nur die Zahl ein (z. B. <strong>23</strong> für 23 Mio.).
+    </p>
+    <input id="guessInput" type="number" placeholder="Zahl eingeben" />
     <div style="text-align:center;">
       <button id="guessBtn" onclick="submitGuess()">Antwort prüfen</button>
     </div>
@@ -114,7 +117,7 @@
     <p id="resultPoints" style="text-align:center;"></p>
     <p style="text-align:center; margin-top:12px;">
       📸 Mach einen Screenshot von diesem Bildschirm<br />
-      und schick ihn in die Gruppe. Nur dein erster Versuch zählt!
+      und schick ihn in die Gruppe. Für die Wertung zählt nur dein erster Versuch!
     </p>
     <div style="text-align:center; margin-top:10px;">
       <button onclick="restartGame()">Neu starten 🔁</button>
@@ -155,11 +158,15 @@ function show(id) {
   if (el) el.classList.remove('hidden');
 }
 
-/* -------- Quiz -------- */
+/* -------- Score-Variablen -------- */
 let playerName = '';
 let totalPoints = 0;
+let quizPoints = 0;
+let labyrinthPoints = 0;
+let guessPoints = 0;
 let wrongAnswers = 0;
 
+/* -------- Quiz -------- */
 const quiz = [
   {
     q: "Wie sagt man 'Frohe Weihnachten' auf Spanisch?",
@@ -198,6 +205,9 @@ function startQuiz() {
   }
   playerName = name;
   totalPoints = 0;
+  quizPoints = 0;
+  labyrinthPoints = 0;
+  guessPoints = 0;
   wrongAnswers = 0;
   qi = 0;
   show('screen-quiz');
@@ -223,6 +233,7 @@ function checkAnswer(i) {
   const qObj = quiz[qi];
   if (i === qObj.c) {
     totalPoints += 10;
+    quizPoints += 10;
     qi++;
     if (qi < quiz.length) {
       renderQuestion();
@@ -232,26 +243,30 @@ function checkAnswer(i) {
   } else {
     wrongAnswers++;
     totalPoints -= 1;
+    quizPoints -= 1;
     alert('Falsch! -1 Punkt');
   }
 }
 
-/* -------- Labyrinth 10x10 -------- */
+/* -------- Labyrinth 10x10 mit Stoppuhr -------- */
 const maze = document.getElementById('maze');
 const ctx = maze.getContext('2d');
 const mazeSize = 10;
 let cellSize;
+const mazeTimeLabel = document.getElementById('maze-time');
+let mazeTimerInterval = null;
+let mazeTime = 0;
 
 const mazeMap = [
-  [1,0,1,1,1,1,1,1,1,1],
-  [1,0,0,0,0,1,0,0,0,1],
-  [1,1,1,0,1,1,0,1,0,1],
+  [0,0,1,1,1,1,1,1,1,1],
+  [1,0,0,0,1,0,0,0,0,1],
+  [1,1,1,0,1,0,1,1,0,1],
+  [1,0,0,0,0,0,1,0,0,1],
+  [1,0,1,1,1,0,1,0,1,1],
+  [1,0,0,0,1,0,0,0,0,1],
+  [1,1,1,0,1,1,1,1,0,1],
   [1,0,0,0,0,0,0,1,0,1],
   [1,0,1,1,1,1,0,1,0,1],
-  [1,0,0,0,0,0,0,1,0,1],
-  [1,1,1,1,1,1,0,1,0,1],
-  [1,0,0,0,0,0,0,1,0,1],
-  [1,0,1,1,1,1,1,1,0,1],
   [1,0,0,0,0,0,0,1,0,2]
 ];
 
@@ -270,6 +285,13 @@ function startMaze() {
   setupMazeCanvas();
   santa = { x: 0, y: 0 };
   mazeStart = performance.now();
+  mazeTime = 0;
+  mazeTimeLabel.textContent = 'Zeit: 0,00 s';
+  if (mazeTimerInterval) clearInterval(mazeTimerInterval);
+  mazeTimerInterval = setInterval(() => {
+    mazeTime = (performance.now() - mazeStart) / 1000;
+    mazeTimeLabel.textContent = 'Zeit: ' + mazeTime.toFixed(2) + ' s';
+  }, 100);
   drawMaze();
 }
 
@@ -281,28 +303,71 @@ function drawMaze() {
       const cy = y * cellSize;
 
       if (v === 1) {
-        ctx.fillStyle = '#022';
+        // Wand
+        ctx.fillStyle = '#04131d';
+        ctx.fillRect(cx, cy, cellSize, cellSize);
+        ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+        ctx.strokeRect(cx+1, cy+1, cellSize-2, cellSize-2);
       } else {
-        ctx.fillStyle = '#044';
+        // Weg
+        ctx.fillStyle = '#06495b';
+        ctx.fillRect(cx, cy, cellSize, cellSize);
       }
-      ctx.fillRect(cx, cy, cellSize, cellSize);
 
       if (v === 2) {
-        ctx.fillStyle = 'gold';
-        ctx.fillRect(cx + cellSize*0.2, cy + cellSize*0.2, cellSize*0.6, cellSize*0.6);
+        // Ziel-Kiste
+        ctx.fillStyle = '#f1c40f';
+        ctx.fillRect(cx + cellSize*0.2, cy + cellSize*0.25, cellSize*0.6, cellSize*0.5);
+        ctx.fillStyle = '#d35400';
+        ctx.fillRect(cx + cellSize*0.45, cy + cellSize*0.25, cellSize*0.1, cellSize*0.5);
+        ctx.beginPath();
+        ctx.arc(cx + cellSize*0.5, cy + cellSize*0.25, cellSize*0.18, 0, Math.PI*2);
+        ctx.fill();
       }
     }
   }
-  // Santa
-  ctx.fillStyle = 'red';
+
+  // Nikolaus zeichnen
+  const sx = santa.x * cellSize + cellSize / 2;
+  const sy = santa.y * cellSize + cellSize / 2;
+
+  // Körper
+  ctx.fillStyle = '#e74c3c';
   ctx.beginPath();
-  ctx.arc(
-    santa.x * cellSize + cellSize / 2,
-    santa.y * cellSize + cellSize / 2,
-    cellSize * 0.3,
-    0,
-    Math.PI * 2
-  );
+  ctx.arc(sx, sy + cellSize*0.05, cellSize*0.28, 0, Math.PI*2);
+  ctx.fill();
+
+  // Gürtel
+  ctx.fillStyle = '#2c3e50';
+  ctx.fillRect(sx - cellSize*0.25, sy, cellSize*0.5, cellSize*0.1);
+  ctx.fillStyle = '#f1c40f';
+  ctx.fillRect(sx - cellSize*0.07, sy, cellSize*0.14, cellSize*0.1);
+
+  // Kopf
+  ctx.fillStyle = '#f9e0bd';
+  ctx.beginPath();
+  ctx.arc(sx, sy - cellSize*0.18, cellSize*0.16, 0, Math.PI*2);
+  ctx.fill();
+
+  // Bart
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.arc(sx, sy - cellSize*0.07, cellSize*0.18, 0, Math.PI*2);
+  ctx.fill();
+
+  // Mütze
+  ctx.fillStyle = '#e74c3c';
+  ctx.beginPath();
+  ctx.moveTo(sx - cellSize*0.2, sy - cellSize*0.25);
+  ctx.lineTo(sx + cellSize*0.22, sy - cellSize*0.25);
+  ctx.lineTo(sx + cellSize*0.05, sy - cellSize*0.45);
+  ctx.closePath();
+  ctx.fill();
+
+  // Bommel
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.arc(sx + cellSize*0.07, sy - cellSize*0.47, cellSize*0.07, 0, Math.PI*2);
   ctx.fill();
 }
 
@@ -314,11 +379,16 @@ function moveSanta(dx, dy) {
   santa.x = nx;
   santa.y = ny;
   if (mazeMap[ny][nx] === 2) {
-    const t = (performance.now() - mazeStart) / 1000;
-    if (t <= 10) totalPoints += 40;
-    else if (t <= 20) totalPoints += 30;
-    else if (t <= 30) totalPoints += 20;
-    else totalPoints += 10;
+    // Ziel erreicht
+    if (mazeTimerInterval) clearInterval(mazeTimerInterval);
+    mazeTime = (performance.now() - mazeStart) / 1000;
+    // Punkte nach Zeit
+    if (mazeTime <= 15)      labyrinthPoints = 60;
+    else if (mazeTime <=25)  labyrinthPoints = 45;
+    else if (mazeTime <=35)  labyrinthPoints = 30;
+    else if (mazeTime <=50)  labyrinthPoints = 15;
+    else                     labyrinthPoints = 5;
+    totalPoints += labyrinthPoints;
     startGuessGame();
   }
   drawMaze();
@@ -333,13 +403,41 @@ window.addEventListener('resize', () => {
 
 /* -------- Schätzfragen -------- */
 const guesses = [
-  { q: "Wie viele Christbäume wurden 2024 in Deutschland verkauft? (in Bäumen)", correct: 23000000, unit: "Bäume" },
-  { q: "Wie viel Truthahnfleisch wurde 2024 in den USA verzehrt? (in Tonnen)", correct: 228000, unit: "Tonnen" },
-  { q: "Wie viele Liter Glühwein trinken die Deutschen pro Jahr? (in Litern)", correct: 50000000, unit: "Liter" },
-  { q: "Wie viele Pakete liefert DHL im Dezember in Deutschland aus? (in Paketen)", correct: 675000000, unit: "Pakete" },
-  { q: "Wie viele Weihnachtsmärkte gibt es in Deutschland? (Anzahl)", correct: 2500, unit: "Märkte" },
-  { q: "Wie viele Schoko-Weihnachtsmänner werden in Deutschland pro Jahr produziert? (in Stück)", correct: 151000000, unit: "Stück" },
-  { q: "Wie viel Geld gibt eine Person in Deutschland im Schnitt für Weihnachten aus? (in Euro pro Person)", correct: 550, unit: "Euro" }
+  {
+    q: "Wie viele Christbäume wurden 2024 in Deutschland verkauft? (in Millionen Bäumen – z. B. 23)",
+    correct: 23,
+    unit: "Mio. Bäume"
+  },
+  {
+    q: "Wie viel Truthahnfleisch wurde 2024 in den USA verzehrt? (in Tausend Tonnen – z. B. 228)",
+    correct: 228,
+    unit: "Tsd. Tonnen"
+  },
+  {
+    q: "Wie viele Liter Glühwein trinken die Deutschen pro Jahr? (in Millionen Litern – z. B. 50)",
+    correct: 50,
+    unit: "Mio. Liter"
+  },
+  {
+    q: "Wie viele Pakete liefert DHL im Dezember in Deutschland aus? (in Millionen Paketen – z. B. 675)",
+    correct: 675,
+    unit: "Mio. Pakete"
+  },
+  {
+    q: "Wie viele Weihnachtsmärkte gibt es in Deutschland? (Anzahl Märkte)",
+    correct: 2500,
+    unit: "Märkte"
+  },
+  {
+    q: "Wie viele Schoko-Weihnachtsmänner werden in Deutschland pro Jahr produziert? (in Millionen Stück – z. B. 151)",
+    correct: 151,
+    unit: "Mio. Stück"
+  },
+  {
+    q: "Wie viel Geld gibt eine Person in Deutschland im Schnitt für Weihnachten aus? (in Euro pro Person)",
+    correct: 550,
+    unit: "Euro"
+  }
 ];
 
 let guessIndex = 0;
@@ -348,6 +446,7 @@ let guessState = 'question'; // 'question' oder 'answer'
 function startGuessGame() {
   show('screen-guess');
   guessIndex = 0;
+  guessPoints = 0;
   guessState = 'question';
   document.getElementById('guessBtn').textContent = 'Antwort prüfen';
   document.getElementById('guess-result').textContent = '';
@@ -369,7 +468,8 @@ function submitGuess() {
   const g = guesses[guessIndex];
 
   if (guessState === 'question') {
-    const val = parseFloat(document.getElementById('guessInput').value.replace(',', '.'));
+    const raw = document.getElementById('guessInput').value.trim().replace(',', '.');
+    const val = parseFloat(raw);
     if (isNaN(val)) {
       alert('Bitte eine Zahl eingeben.');
       return;
@@ -379,12 +479,14 @@ function submitGuess() {
     const diffPercent = (diff / g.correct) * 100;
 
     let pts = 5;
-    if (diffPercent <= 5) pts = 40;
-    else if (diffPercent <= 10) pts = 30;
-    else if (diffPercent <= 20) pts = 20;
-    else if (diffPercent <= 30) pts = 10;
+    if (diffPercent <= 5)      pts = 40;
+    else if (diffPercent <=10) pts = 30;
+    else if (diffPercent <=20) pts = 20;
+    else if (diffPercent <=30) pts = 10;
+    // >30% bleibt 5
 
     totalPoints += pts;
+    guessPoints += pts;
 
     const res = document.getElementById('guess-result');
     res.innerHTML =
@@ -420,8 +522,11 @@ function finishGame() {
     : "Hinweis: Für die Wertung zählt nur dein erster Versuch auf diesem Gerät.";
 
   document.getElementById('resultPoints').innerHTML =
-    `${playerName}, du hast insgesamt <strong>${totalPoints}</strong> Punkte!<br>` +
-    `Falsche Antworten im Quiz: <strong>${wrongAnswers}</strong>.<br><br>` +
+    `${playerName}, du hast insgesamt <strong>${totalPoints}</strong> Punkte!<br><br>` +
+    `Quiz-Punkte: <strong>${quizPoints}</strong> (falsche Antworten: <strong>${wrongAnswers}</strong>)<br>` +
+    `Labyrinth: <strong>${labyrinthPoints}</strong> Punkte (Zeit: <strong>${mazeTime.toFixed(2)} s</strong>)<br>` +
+    `Schätzfragen: <strong>${guessPoints}</strong> Punkte<br><br>` +
+    `Anzahl der Versuche auf diesem Gerät: <strong>${attempts}</strong><br>` +
     `<strong>${attemptText}</strong>`;
 }
 
