@@ -73,14 +73,8 @@
       border-radius:8px;
       border:none;
     }
-    .small {
-      font-size:13px;
-      opacity:0.9;
-    }
-    .code-row {
-      font-size:14px;
-      margin:4px 0;
-    }
+    .small { font-size:13px; opacity:0.9; }
+    .code-row { font-size:14px; margin:4px 0; }
   </style>
 </head>
 <body>
@@ -100,7 +94,7 @@
     <h1>🎄 Advents-Challenge</h1>
     <p id="attemptInfo" style="color:#ffdddd; font-weight:600; display:none; text-align:center;"></p>
     <p>Name eingeben:</p>
-    <input id="playerName" placeholder="Janine <3" />
+    <input id="playerName" placeholder="Janine &lt;3" />
     <div class="center">
       <button onclick="goQuizInfo()">Weiter zum Quiz ▶️</button>
     </div>
@@ -132,11 +126,11 @@
     <p class="center">
       Steuere den Nikolaus zur goldenen Geschenk-Kiste 🎁<br><br>
       Punkte nach Zeit:<br>
-      ≤ 15 s → 60 Punkte<br>
-      15–25 s → 45 Punkte<br>
-      25–35 s → 30 Punkte<br>
-      35–50 s → 15 Punkte<br>
-      > 50 s → 5 Punkte
+      &lt; 5 s → 80 Punkte<br>
+      5–6 s → 70 Punkte<br>
+      6–7 s → 60 Punkte<br>
+      7–8 s → 50 Punkte<br>
+      &gt; 8 s → 30 Punkte
     </p>
     <div class="center">
       <button onclick="startMaze()">Labyrinth starten ▶️</button>
@@ -213,7 +207,7 @@
     <h2>🔐 Weihnachts-Code – Infos</h2>
     <p class="center">
       Es gibt einen geheimen Code aus 3 Weihnachtssymbolen (🎄 🎁 ⭐ 🎅 🔔).<br>
-      Du hast 5 Versuche, den Code zu knacken.<br>
+      Du hast 7 Versuche, den Code zu knacken.<br>
       Nach jedem Versuch bekommst du Hinweise.
     </p>
     <div class="center">
@@ -230,7 +224,7 @@
       <select id="codePos2"></select>
       <select id="codePos3"></select>
     </div>
-    <div class="center">
+    <div class="center" style="margin-top:8px;">
       <button id="codeBtn" onclick="submitCodeGuess()">Kombination prüfen</button>
     </div>
     <div id="code-log" style="margin-top:10px;"></div>
@@ -310,11 +304,12 @@ function initIntro() {
   if (attempts > 0) {
     const info = document.getElementById('attemptInfo');
     info.style.display = 'block';
-    info.textContent = "Hinweis: Auf diesem Gerät wurde schon gespielt. Nur der erste Versuch zählt!";
+    info.textContent =
+      "Hinweis: Auf diesem Gerät wurde schon gespielt. Nur der erste Versuch zählt!";
   }
 }
 
-/* ---------- Globale Scores ---------- */
+/* ---------- Globale Scores & Maxima ---------- */
 let playerName = "";
 let totalPoints = 0;
 let quizPoints = 0;
@@ -323,7 +318,13 @@ let bellPoints = 0;
 let guessPoints = 0;
 let codePoints = 0;
 let timerPoints = 0;
-let wrongAnswers = 0;
+
+const QUIZ_MAX = 10 * 10;   // 10 Fragen * 10 Punkte
+const LABYRINTH_MAX = 80;
+const BELL_MAX = 30;        // 3 Glocken * 10
+const GUESS_MAX = 7 * 40;   // 7 Fragen
+const CODE_MAX = 40;
+const TIMER_MAX = 50;
 
 function goQuizInfo() {
   const name = document.getElementById('playerName').value.trim();
@@ -339,7 +340,6 @@ function goQuizInfo() {
   guessPoints = 0;
   codePoints = 0;
   timerPoints = 0;
-  wrongAnswers = 0;
   show('screen-quiz-info');
 }
 
@@ -402,7 +402,6 @@ let qi = 0;
 function startQuiz() {
   qi = 0;
   quizPoints = 0;
-  wrongAnswers = 0;
   show('screen-quiz');
   renderQuestion();
 }
@@ -434,7 +433,6 @@ function checkAnswer(i) {
       show('screen-maze-info');
     }
   } else {
-    wrongAnswers++;
     totalPoints -= 1;
     quizPoints -= 1;
     alert("Falsch! -1 Punkt");
@@ -526,19 +524,21 @@ function moveSanta(dx, dy) {
   if (mazeMap[ny][nx] === 2) {
     if (mazeTimerInterval) clearInterval(mazeTimerInterval);
     mazeTime = (performance.now() - mazeStart) / 1000;
-    if (mazeTime <= 15) labyrinthPoints = 60;
-    else if (mazeTime <= 25) labyrinthPoints = 45;
-    else if (mazeTime <= 35) labyrinthPoints = 30;
-    else if (mazeTime <= 50) labyrinthPoints = 15;
-    else labyrinthPoints = 5;
+
+    if (mazeTime < 5)        labyrinthPoints = 80;
+    else if (mazeTime < 6)   labyrinthPoints = 70;
+    else if (mazeTime < 7)   labyrinthPoints = 60;
+    else if (mazeTime < 8)   labyrinthPoints = 50;
+    else                     labyrinthPoints = 30;
+
     totalPoints += labyrinthPoints;
     show('screen-bell-info');
   }
   drawMaze();
 }
 
-/* ---------- Glocken-Spiel ---------- */
-const bellSymbolsAll = ["🎄","🎁","⭐","🎅","❄️","🔔"];
+/* ---------- Glocken-Spiel (fixe Glocken bei 3, 8, 14) ---------- */
+const bellSymbolsAll = ["🎄","🎁","⭐","🎅","❄️"];
 let bellSequence = [];
 let bellIndex = -1;
 let bellInterval = null;
@@ -561,26 +561,20 @@ function startBellGame() {
     "Tippe nur, wenn eine Glocke (🔔) zu sehen ist.";
   document.getElementById('bell-button').textContent =
     "JETZT tippen, wenn Glocke!";
-  generateBellSequence();
+  generateBellSequenceFixed();
   if (bellInterval) clearInterval(bellInterval);
   nextBellSymbol();
   bellInterval = setInterval(nextBellSymbol, 550);
 }
 
-function generateBellSequence() {
-  bellSequence = new Array(15).fill(null);
-  const bellPositions = [];
-  while (bellPositions.length < 3) {
-    const idx = Math.floor(Math.random() * 15);
-    if (!bellPositions.includes(idx)) bellPositions.push(idx);
-  }
+function generateBellSequenceFixed() {
+  bellSequence = [];
   for (let i = 0; i < 15; i++) {
-    if (bellPositions.includes(i)) {
-      bellSequence[i] = { symbol: "🔔", isBell: true };
+    if (i === 2 || i === 7 || i === 13) {
+      bellSequence.push({ symbol: "🔔", isBell: true });
     } else {
-      const others = bellSymbolsAll.filter(s => s !== "🔔");
-      const sym = others[Math.floor(Math.random() * others.length)];
-      bellSequence[i] = { symbol: sym, isBell: false };
+      const sym = bellSymbolsAll[i % bellSymbolsAll.length];
+      bellSequence.push({ symbol: sym, isBell: false });
     }
   }
 }
@@ -605,9 +599,9 @@ function pressBell() {
     if (bellCurrentIsBell && !bellClickedThisSymbol) {
       const rt = (performance.now() - bellCurrentStart) / 1000;
       let pts = 2;
-      if (rt <= 0.25) pts = 10;
-      else if (rt <= 0.5) pts = 7;
-      else if (rt <= 0.8) pts = 5;
+      if (rt <= 0.25)      pts = 10;
+      else if (rt <= 0.5)  pts = 7;
+      else if (rt <= 0.8)  pts = 5;
       bellPoints += pts;
       bellHits++;
       bellClickedThisSymbol = true;
@@ -683,10 +677,10 @@ function submitGuess() {
     const diff = Math.abs(val - g.correct);
     const diffPercent = (diff / g.correct) * 100;
     let pts = 5;
-    if (diffPercent <= 5) pts = 40;
-    else if (diffPercent <= 10) pts = 30;
-    else if (diffPercent <= 20) pts = 20;
-    else if (diffPercent <= 30) pts = 10;
+    if (diffPercent <= 5)      pts = 40;
+    else if (diffPercent <=10) pts = 30;
+    else if (diffPercent <=20) pts = 20;
+    else if (diffPercent <=30) pts = 10;
     guessPoints += pts;
     totalPoints += pts;
     document.getElementById('guess-result').innerHTML =
@@ -711,7 +705,7 @@ function submitGuess() {
 const codeSymbols = ["🎄","🎁","⭐","🎅","🔔"];
 let secretCode = [];
 let codeAttempt = 0;
-const maxCodeAttempts = 5;
+const maxCodeAttempts = 7;
 let codeSolved = false;
 
 function fillCodeSelects() {
@@ -736,8 +730,9 @@ function startCodeGame() {
   codeSolved = false;
   document.getElementById('code-log').innerHTML = "";
   document.getElementById('code-result').textContent = "";
-  document.getElementById('codeBtn').textContent = "Kombination prüfen";
-  document.getElementById('codeBtn').onclick = submitCodeGuess;
+  const btn = document.getElementById('codeBtn');
+  btn.textContent = "Kombination prüfen";
+  btn.onclick = submitCodeGuess;
   document.getElementById('code-progress').textContent =
     `Versuch 1 von ${maxCodeAttempts}`;
 }
@@ -758,14 +753,14 @@ function submitCodeGuess() {
   const secretCopy = [...secretCode];
   const guessCopy = [...guess];
 
-  for (let i = 0; i < 3; i++) {
+  for (let i=0; i<3; i++){
     if (guessCopy[i] === secretCopy[i]) {
       exact++;
       secretCopy[i] = null;
       guessCopy[i] = null;
     }
   }
-  for (let i = 0; i < 3; i++) {
+  for (let i=0; i<3; i++){
     if (guessCopy[i] !== null) {
       const idx = secretCopy.indexOf(guessCopy[i]);
       if (idx !== -1) {
@@ -780,29 +775,31 @@ function submitCodeGuess() {
   const row = document.createElement('div');
   row.className = 'code-row';
   row.textContent =
-    `Versuch ${codeAttempt}: ${g1} ${g2} ${g3} → Richtig: ${exact}, Richtige Symbol(e) falsche Position: ${partial}`;
+    `Versuch ${codeAttempt}: ${g1} ${g2} ${g3} → exakt: ${exact}, falsche Position: ${partial}`;
   log.appendChild(row);
+
+  const progress = document.getElementById('code-progress');
+  const resultEl = document.getElementById('code-result');
+  const btn = document.getElementById('codeBtn');
 
   if (exact === 3) {
     codeSolved = true;
-    if (codeAttempt <= 2) codePoints = 40;
+    if (codeAttempt <= 2)      codePoints = 40;
     else if (codeAttempt <= 4) codePoints = 25;
-    else codePoints = 10;
+    else                       codePoints = 10;
     totalPoints += codePoints;
-    document.getElementById('code-result').innerHTML =
-      `Code geknackt! 🎉<br>Punkte im Code-Spiel: <b>${codePoints}</b>`;
-    document.getElementById('codeBtn').textContent =
-      "Weiter zur 10-Sekunden-Challenge ▶️";
-    document.getElementById('codeBtn').onclick = () => show('screen-timer-info');
+    progress.textContent = `Code geknackt in ${codeAttempt} Versuchen.`;
+    resultEl.innerHTML = `Punkte im Code-Spiel: <b>${codePoints}</b>`;
+    btn.textContent = "Weiter zur 10-Sekunden-Challenge ▶️";
+    btn.onclick = () => show('screen-timer-info');
   } else if (codeAttempt >= maxCodeAttempts) {
     codePoints = 0;
-    document.getElementById('code-result').innerHTML =
-      `Code nicht geknackt. 😈<br>Punkte im Code-Spiel: <b>0</b>`;
-    document.getElementById('codeBtn').textContent =
-      "Weiter zur 10-Sekunden-Challenge ▶️";
-    document.getElementById('codeBtn').onclick = () => show('screen-timer-info');
+    progress.textContent = "Keine Versuche mehr übrig.";
+    resultEl.innerHTML = `Code nicht geknackt. Punkte im Code-Spiel: <b>0</b>`;
+    btn.textContent = "Weiter zur 10-Sekunden-Challenge ▶️";
+    btn.onclick = () => show('screen-timer-info');
   } else {
-    document.getElementById('code-progress').textContent =
+    progress.textContent =
       `Versuch ${codeAttempt + 1} von ${maxCodeAttempts}`;
   }
 }
@@ -841,7 +838,7 @@ function timerStop() {
   document.getElementById('timerStopBtn').disabled = true;
   const diff = Math.abs(timerTime - 10);
   let pts = 10;
-  if (diff <= 0.05) pts = 50;
+  if (diff <= 0.05)      pts = 50;
   else if (diff <= 0.20) pts = 40;
   else if (diff <= 0.50) pts = 30;
   else if (diff <= 1.00) pts = 20;
@@ -870,12 +867,12 @@ function finishGame() {
 
   document.getElementById('resultPoints').innerHTML =
     `${playerName}, du hast insgesamt <b>${totalPoints}</b> Punkte!<br><br>` +
-    `Quiz: <b>${quizPoints}</b> Punkte (Fehler: ${wrongAnswers})<br>` +
-    `Labyrinth: <b>${labyrinthPoints}</b> Punkte<br>` +
-    `Glocken-Spiel: <b>${bellPoints}</b> Punkte<br>` +
-    `Schätzfragen: <b>${guessPoints}</b> Punkte<br>` +
-    `Code-Spiel: <b>${codePoints}</b> Punkte<br>` +
-    `10-Sekunden-Challenge: <b>${timerPoints}</b> Punkte<br><br>` +
+    `Quiz: <b>${quizPoints}</b> / ${QUIZ_MAX} Punkte<br>` +
+    `Labyrinth: <b>${labyrinthPoints}</b> / ${LABYRINTH_MAX} Punkte<br>` +
+    `Glocken-Spiel: <b>${bellPoints}</b> / ${BELL_MAX} Punkte<br>` +
+    `Schätzfragen: <b>${guessPoints}</b> / ${GUESS_MAX} Punkte<br>` +
+    `Code-Spiel: <b>${codePoints}</b> / ${CODE_MAX} Punkte<br>` +
+    `10-Sekunden-Challenge: <b>${timerPoints}</b> / ${TIMER_MAX} Punkte<br><br>` +
     `Anzahl der Versuche auf diesem Gerät: <b>${attempts}</b><br>` +
     attemptText;
 }
