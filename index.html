@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Advents-Challenge NEU</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui;
+      background: linear-gradient(135deg, #b31217, #1a2a6c);
+      margin: 0;
+      padding: 16px;
+      color: #fff;
+    }
+    .card {
+      max-width: 640px;
+      margin: 0 auto;
+      background: rgba(0,0,0,0.25);
+      backdrop-filter: blur(4px);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+    h1,h2,h3{text-align:center;margin:0 0 10px 0;}
+    .hidden{display:none;}
+    button{padding:12px 20px;border:none;border-radius:12px;font-size:16px;cursor:pointer;background:#ffd166;color:#222;margin:6px;}
+    input{padding:10px;border-radius:10px;border:none;width:100%;margin:10px 0;}
+  </style>
+</head>
+<body>
+
+<!-- Passwort -->
+<div id="pwScreen" style="text-align:center; padding:20px;">
+  <h2>🔐 Passwort eingeben</h2>
+  <p>Passwort wurde per SMS gesendet.</p>
+  <input id="pwInput" type="password" placeholder="Passwort">
+  <button onclick="checkPW()">Weiter</button>
+  <p id="pwError" style="color:red; display:none;">Falsch!</p>
+</div>
+
+<script>
+function checkPW(){
+  if(document.getElementById('pwInput').value.trim()==='HOTMarco'){
+    document.getElementById('pwScreen').style.display='none';
+    document.getElementById('screen-intro').classList.remove('hidden');
+  } else document.getElementById('pwError').style.display='block';
+}
+</script>
+
+<div class="card">
+  <!-- Intro -->
+  <section id="screen-intro" class="hidden">
+    <h1>🎄 Advents-Challenge</h1>
+    <p>Neues Game. Neue Punkte. Neue Chance.</p>
+    <p>Dein Name:</p>
+    <input id="playerName" placeholder="z. B. Marco">
+    <button onclick="startQuiz()">Start ▶️</button>
+  </section>
+
+  <!-- Quiz -->
+  <section id="screen-quiz" class="hidden">
+    <h2>❄️ Quiz</h2>
+    <p id="quiz-progress"></p>
+    <h3 id="quiz-question"></h3>
+    <div id="quiz-answers"></div>
+  </section>
+
+  <!-- Labyrinth -->
+  <section id="screen-maze" class="hidden">
+    <h2>🎅 Labyrinth</h2>
+    <p>Finde die Geschenk-Kiste!</p>
+    <canvas id="maze"></canvas>
+    <div style="text-align:center;">
+      <button onclick="moveSanta(0,-1)">⬆️</button><br>
+      <button onclick="moveSanta(-1,0)">⬅️</button>
+      <button onclick="moveSanta(1,0)">➡️</button><br>
+      <button onclick="moveSanta(0,1)">⬇️</button>
+    </div>
+  </section>
+
+  <!-- Runner -->
+  <section id="screen-runner" class="hidden">
+    <h2>🏃‍♂️ Santa-Speed-Runner</h2>
+    <p id="runner-info"></p>
+    <button onclick="jump()">SPRINGEN ⬆️</button>
+  </section>
+
+  <!-- Swipe Hero -->
+  <section id="screen-swipe" class="hidden">
+    <h2>🎮 Christmas Swipe Hero</h2>
+    <h1 id="swipe-symbol" style="font-size:60px;">?</h1>
+    <div style="text-align:center;">
+      <button onclick="swipe('up')">⬆️</button><br>
+      <button onclick="swipe('left')">⬅️</button>
+      <button onclick="swipe('right')">➡️</button><br>
+      <button onclick="swipe('down')">⬇️</button>
+    </div>
+  </section>
+
+  <!-- Ergebnis -->
+  <section id="screen-result" class="hidden">
+    <h2>🏆 Ergebnisse</h2>
+    <p id="resultPoints"></p>
+    <table id="ranking" border="1" style="width:100%;background:rgba(255,255,255,0.2);"></table>
+    <button onclick="restartGame()">Neu starten</button>
+  </section>
+</div>
+
+<script>
+let name="";
+let totalPoints=0;
+let totalTime=0;
+let results=[];
+
+/* QUIZ */
+const quiz=[
+ {q:"Wie sagt man Frohe Weihnachten auf Englisch?",a:["Merry Christmas","Happy X-Day","Good Winter"],c:0},
+ {q:"Welches Tier zieht den Schlitten?",a:["Pferde","Rentiere","Kamele"],c:1},
+ {q:"Wo isst man Weihnachten gerne KFC?",a:["Japan","Italien","Kanada"],c:0},
+ {q:"Welches Getränk gehört zu Weihnachten?",a:["Eggnog","Mango Shake","Ice Tea"],c:0},
+ {q:"Wer ist gleich nochmal HOT?",a:["Marco","Bene","Simon"],c:0}
+];
+let qi=0;
+let quizStart;
+
+function startQuiz(){
+ name=document.getElementById('playerName').value.trim();
+ if(!name){alert('Name fehlt');return;}
+ document.getElementById('screen-intro').classList.add('hidden');
+ document.getElementById('screen-quiz').classList.remove('hidden');
+ qi=0;
+ quizStart=performance.now();
+ loadQuestion();
+}
+
+function loadQuestion(){
+ document.getElementById('quiz-progress').innerText=`Frage ${qi+1} von 5`;
+ document.getElementById('quiz-question').innerText=quiz[qi].q;
+ let div=document.getElementById('quiz-answers');
+ div.innerHTML="";
+ quiz[qi].a.forEach((ans,i)=>{
+   let b=document.createElement('button');
+   b.innerText=ans;
+   b.onclick=()=>checkAnswer(i);
+   div.appendChild(b);
+ });
+}
+
+function checkAnswer(i){
+ if(i===quiz[qi].c){ totalPoints+=10; qi++; }
+ else { qi++; }
+ if(qi<quiz.length) loadQuestion();
+ else startMaze();
+}
+
+/* LABYRINTH */
+const maze=document.getElementById('maze');
+const ctx=maze.getContext('2d');
+const size=6;
+let cs=Math.min(300,window.innerWidth-40)/size;
+maze.width=cs*size;
+maze.height=cs*size;
+let map=[
+ [1,0,1,1,1,1],
+ [1,0,0,0,0,1],
+ [1,1,1,0,1,1],
+ [1,0,0,0,0,1],
+ [1,0,1,1,0,1],
+ [1,0,0,1,0,2]
+];
+let santa={x:0,y:0};
+let mazeStart;
+
+function startMaze(){
+ document.getElementById('screen-quiz').classList.add('hidden');
+ document.getElementById('screen-maze').classList.remove('hidden');
+ santa={x:0,y:0};
+ mazeStart=performance.now();
+ drawMaze();
+}
+
+function drawMaze(){
+ for(let y=0;y<size;y++){
+  for(let x=0;x<size;x++){
+    if(map[y][x]===1){ctx.fillStyle="#033";} else if(map[y][x]===2){ctx.fillStyle="gold";} else ctx.fillStyle="#155";
+    ctx.fillRect(x*cs,y*cs,cs,cs);
+  }
+ }
+ ctx.fillStyle="red";
+ ctx.beginPath();
+ ctx.arc(santa.x*cs+cs/2,santa.y*cs+cs/2,cs*0.3,0,Math.PI*2);
+ ctx.fill();
+}
+
+function moveSanta(dx,dy){
+ let nx=santa.x+dx,ny=santa.y+dy;
+ if(nx<0||ny<0||nx>=size||ny>=size) return;
+ if(map[ny][nx]===1)return;
+ santa.x=nx;santa.y=ny;
+ if(map[ny][nx]===2){
+   let t=(performance.now()-mazeStart)/1000;
+   totalTime+=t;
+   if(t<=10) totalPoints+=40;
+   else if(t<=20) totalPoints+=30;
+   else if(t<=30) totalPoints+=20;
+   else totalPoints+=10;
+   startRunner();
+ }
+ drawMaze();
+}
+
+/* RUNNER */
+let runnerIndex=0;
+function startRunner(){
+ document.getElementById('screen-maze').classList.add('hidden');
+ document.getElementById('screen-runner').classList.remove('hidden');
+ runnerIndex=0;
+ document.getElementById('runner-info').innerText="10 Hindernisse – springe richtig!";
+}
+
+function jump(){
+ if(runnerIndex<10){ totalPoints+=5; runnerIndex++; }
+ if(runnerIndex>=10) startSwipe();
+}
+
+/* SWIPE */
+const symbols=[{s:"🎅",dir:"up"},{s:"🎄",dir:"down"},{s:"⭐",dir:"left"},{s:"🍪",dir:"right"}];
+let swipeIndex=0;
+let current;
+
+function startSwipe(){
+ document.getElementById('screen-runner').classList.add('hidden');
+ document.getElementById('screen-swipe').classList.remove('hidden');
+ swipeIndex=0;
+ nextSwipe();
+}
+
+function nextSwipe(){
+ current=symbols[Math.floor(Math.random()*symbols.length)];
+ document.getElementById('swipe-symbol').innerText=current.s;
+}
+
+function swipe(direction){
+ if(direction===current.dir) totalPoints+=5;
+ swipeIndex++;
+ if(swipeIndex>=10) finishGame();
+ else nextSwipe();
+}
+
+/* RESULT */
+function finishGame(){
+ document.getElementById('screen-swipe').classList.add('hidden');
+ document.getElementById('screen-result').classList.remove('hidden');
+ results.push({name:name,points:totalPoints});
+ results.sort((a,b)=>b.points-a.points);
+ document.getElementById('resultPoints').innerText=`${name}, du hast ${totalPoints} Punkte!`;
+ let t="<tr><th>Platz</th><th>Name</th><th>Punkte</th></tr>";
+ results.forEach((r,i)=>{t+=`<tr><td>${i+1}</td><td>${r.name}</td><td>${r.points}</td></tr>`});
+ document.getElementById('ranking').innerHTML=t;
+}
+
+function restartGame(){location.reload();}
+</script>
+
+</body>
+</html>
