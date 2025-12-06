@@ -80,7 +80,6 @@
       box-shadow:0 4px 12px rgba(0,0,0,0.35);
       font-size:16px;
       touch-action:manipulation;
-      -ms-touch-action:manipulation;
       -webkit-tap-highlight-color: transparent;
     }
 
@@ -418,7 +417,7 @@
 <script>
 /* ---------- Navigation & Passwort ---------- */
 function show(id) {
-  [
+  var ids = [
     'screen-intro','screen-quiz-info','screen-quiz',
     'screen-maze-info','screen-maze',
     'screen-bell-info','screen-bell',
@@ -428,7 +427,8 @@ function show(id) {
     'screen-timer-info','screen-timer',
     'screen-bomb-info','screen-bomb',
     'screen-result'
-  ].forEach(function(s) {
+  ];
+  ids.forEach(function(s) {
     var el = document.getElementById(s);
     if (el) el.classList.add('hidden');
   });
@@ -1103,8 +1103,13 @@ function timerStop() {
     "Abweichung von 10,00 s: <b>" + diff.toFixed(2) + " s</b><br>" +
     "Punkte in der 10-Sekunden-Challenge: <b>" + timerPoints + "</b>";
 
-  document.getElementById('timer-next').innerHTML =
-    '<button onclick="show(\\'screen-bomb-info\\')">Weiter zum Bomben-Spiel ▶️</button>';
+  // Button programmatisch erzeugen (kein riskantes innerHTML mit onclick)
+  var nextContainer = document.getElementById('timer-next');
+  nextContainer.innerHTML = "";
+  var btn = document.createElement('button');
+  btn.textContent = "Weiter zum Bomben-Spiel ▶️";
+  btn.onclick = function() { show('screen-bomb-info'); };
+  nextContainer.appendChild(btn);
 }
 
 /* ---------- Geschenk-Bomben-Spiel ---------- */
@@ -1146,8 +1151,12 @@ function openGift(i, btn) {
       "Boom! Du hast die Bombe erwischt.";
     document.getElementById('bomb-result').innerHTML =
       "Punkte im Bomben-Spiel: <b>" + bombPoints + "</b>";
-    document.getElementById('bomb-next').innerHTML =
-      '<button onclick="finishGame()">Weiter zum Ergebnis ▶️</button>';
+    var next = document.getElementById('bomb-next');
+    next.innerHTML = "";
+    var b = document.createElement('button');
+    b.textContent = "Weiter zum Ergebnis ▶️";
+    b.onclick = finishGame;
+    next.appendChild(b);
   } else {
     bombPoints += 5;
     totalPoints += 5;
@@ -1164,8 +1173,12 @@ function openGift(i, btn) {
         "Stark! Du hast alle sicheren Geschenke erwischt.";
       document.getElementById('bomb-result').innerHTML =
         "Punkte im Bomben-Spiel: <b>" + bombPoints + "</b>";
-      document.getElementById('bomb-next').innerHTML =
-        '<button onclick="finishGame()">Weiter zum Ergebnis ▶️</button>';
+      var next2 = document.getElementById('bomb-next');
+      next2.innerHTML = "";
+      var b2 = document.createElement('button');
+      b2.textContent = "Weiter zum Ergebnis ▶️";
+      b2.onclick = finishGame;
+      next2.appendChild(b2);
     }
   }
 }
