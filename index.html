@@ -9,40 +9,87 @@
   <title>Advents-Challenge Finale</title>
   <style>
     * { box-sizing: border-box; }
+
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: linear-gradient(135deg,#b31217,#1a2a6c);
+      background: radial-gradient(circle at top, #ffecd2 0, #b31217 30%, #1a2a6c 75%);
       margin:0;
       padding:16px;
       color:#fff;
       -webkit-user-select:none;
       user-select:none;
+      position:relative;
+      overflow-x:hidden;
     }
+
+    /* dezente Schneeflocken */
+    body::before {
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background-image:
+        radial-gradient(2px 2px at 10% 20%, rgba(255,255,255,0.55) 50%, transparent 50%),
+        radial-gradient(2px 2px at 80% 10%, rgba(255,255,255,0.4) 50%, transparent 50%),
+        radial-gradient(2px 2px at 50% 80%, rgba(255,255,255,0.35) 50%, transparent 50%);
+      background-size: 200px 300px, 260px 320px, 220px 260px;
+      animation: snow 30s linear infinite;
+      z-index:-1;
+      opacity:0.7;
+    }
+
+    @keyframes snow {
+      from { transform: translateY(-50px); }
+      to   { transform: translateY(50px); }
+    }
+
     .card {
-      max-width:680px;
+      max-width:700px;
       margin:0 auto;
-      background:rgba(0,0,0,0.25);
+      background:rgba(0,0,0,0.35);
       padding:20px;
-      border-radius:18px;
-      box-shadow:0 10px 30px rgba(0,0,0,0.35);
+      border-radius:20px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.5);
+      border:1px solid rgba(255,255,255,0.18);
     }
+
     .hidden { display:none; }
-    h1,h2,h3 { text-align:center; margin:0 0 10px 0; }
+
+    h1,h2,h3 {
+      text-align:center;
+      margin:0 0 10px 0;
+      text-shadow:0 2px 4px rgba(0,0,0,0.45);
+    }
+
+    h1 { font-size:28px; }
+    h2 { font-size:22px; }
+    h3 { font-size:18px; }
+
     p { margin:6px 0; }
+
+    .center { text-align:center; }
+
     button {
       padding:12px 20px;
       border:none;
       border-radius:12px;
       cursor:pointer;
-      background:#ffd166;
+      background:linear-gradient(135deg,#ffd166,#ffb347);
+      color:#3b2710;
       margin:6px;
       font-weight:600;
-      box-shadow:0 4px 12px rgba(0,0,0,0.3);
+      box-shadow:0 4px 12px rgba(0,0,0,0.35);
       font-size:16px;
       touch-action:manipulation;
       -ms-touch-action:manipulation;
       -webkit-tap-highlight-color: transparent;
     }
+
+    button:active {
+      transform:translateY(1px);
+      box-shadow:0 2px 6px rgba(0,0,0,0.4);
+    }
+
     input {
       width:100%;
       padding:10px;
@@ -51,6 +98,7 @@
       margin:8px 0;
       font-size:16px;
     }
+
     #maze {
       display:block;
       margin:0 auto 8px;
@@ -60,12 +108,13 @@
       max-width:100%;
       touch-action:none;
     }
-    .center { text-align:center; }
+
     .big-symbol {
       font-size:64px;
       text-align:center;
       margin:16px 0;
     }
+
     select {
       font-size:16px;
       padding:6px;
@@ -73,18 +122,42 @@
       border-radius:8px;
       border:none;
     }
+
     .small { font-size:13px; opacity:0.9; }
+
     .code-row { font-size:14px; margin:4px 0; }
+
     .gift-grid {
       display:grid;
       grid-template-columns:repeat(3,1fr);
       gap:8px;
       margin-top:10px;
     }
+
     .gift-btn {
       width:100%;
       padding:14px 8px;
       font-size:20px;
+    }
+
+    .info-tag {
+      display:inline-block;
+      padding:2px 8px;
+      border-radius:999px;
+      background:rgba(255,255,255,0.15);
+      font-size:12px;
+      margin-bottom:6px;
+    }
+
+    .story-box {
+      background:rgba(0,0,0,0.35);
+      border-radius:12px;
+      padding:10px 12px;
+      border:1px solid rgba(255,255,255,0.15);
+      max-height:220px;
+      overflow-y:auto;
+      font-size:14px;
+      line-height:1.4;
     }
   </style>
 </head>
@@ -93,6 +166,7 @@
 <!-- Passwort-Screen -->
 <div id="pwScreen" style="text-align:center; padding:40px 20px;">
   <h2>🔐 Passwort eingeben</h2>
+  <p class="small">Das Passwort hast du per SMS bekommen.</p>
   <input id="pwInput" type="password" placeholder="Passwort" />
   <button onclick="checkPW()">Weiter</button>
   <p id="pwError" style="color:#ffaaaa; display:none; margin-top:8px;">Falsches Passwort!</p>
@@ -105,17 +179,18 @@
     <h1>🎄 Advents-Challenge</h1>
     <p id="attemptInfo" style="color:#ffdddd; font-weight:600; display:none; text-align:center;"></p>
     <p>Name eingeben:</p>
-    <input id="playerName" placeholder="z. B. Janine <3 <3" />
+    <input id="playerName" placeholder="z. B. Dein Name" />
     <div class="center">
-      <button onclick="goQuizInfo()">Weiter zum Quiz ▶️</button>
+      <button onclick="goQuizInfo()">Los geht's ▶️</button>
     </div>
   </section>
 
   <!-- Quiz: Info -->
   <section id="screen-quiz-info" class="hidden">
-    <h2>❄️ Quiz – Infos</h2>
+    <h2>🆕 Spiel 1: Quiz</h2>
+    <p class="info-tag">Neues Spiel</p>
     <p class="center">
-      10 anspruchsvolle Weihnachtsfragen mit je 5 Antwortmöglichkeiten.<br>
+      10 Weihnachtsfragen mit je 5 Antwortmöglichkeiten.<br>
       ✅ Richtig: +10 Punkte &nbsp;&nbsp; ❌ Falsch: -1 Punkt
     </p>
     <div class="center">
@@ -133,7 +208,8 @@
 
   <!-- Labyrinth: Info -->
   <section id="screen-maze-info" class="hidden">
-    <h2>🎅 Labyrinth – Infos</h2>
+    <h2>🆕 Spiel 2: Labyrinth</h2>
+    <p class="info-tag">Neues Spiel</p>
     <p class="center">
       Steuere den Nikolaus zur goldenen Geschenk-Kiste 🎁<br><br>
       Punkte nach Zeit:<br>
@@ -163,7 +239,8 @@
 
   <!-- Glocken-Spiel: Info -->
   <section id="screen-bell-info" class="hidden">
-    <h2>🔔 Glocken-Reflex – Infos</h2>
+    <h2>🆕 Spiel 3: Glocken-Reflex</h2>
+    <p class="info-tag">Neues Spiel</p>
     <p class="center">
       Es werden nacheinander 15 Symbole angezeigt, davon 3 Glocken (🔔).<br>
       Tippe nur, wenn eine Glocke zu sehen ist.<br>
@@ -190,11 +267,13 @@
 
   <!-- Schätzfragen: Info -->
   <section id="screen-guess-info" class="hidden">
-    <h2>📏 Schätzfragen – Infos</h2>
+    <h2>🆕 Spiel 4: Schätzfragen</h2>
+    <p class="info-tag">Neues Spiel</p>
     <p class="center">
-      Du bekommst mehrere Schätzfragen mit Weihnachtsbezug.<br>
-      Gib nur die Zahl ein – die Einheit steht in der Frage.<br>
-      Je genauer du liegst, desto mehr Punkte.
+      Du bekommst acht Schätzfragen mit Weihnachtsbezug.<br>
+      Wichtig: Gib immer nur die Zahl ein – die Einheit steht in der Frage.<br>
+      Beispiel: Steht „in Millionen“, dann gib „23“ ein (für 23.000.000).<br>
+      Je genauer du schätzt, desto mehr Punkte.
     </p>
     <div class="center">
       <button onclick="startGuessGame()">Schätzfragen starten ▶️</button>
@@ -206,16 +285,48 @@
     <h2>📏 Schätzfragen</h2>
     <p id="guess-progress" class="center"></p>
     <h3 id="guess-question"></h3>
-    <input id="guessInput" type="number" placeholder="Zahl eingeben" />
+    <input id="guessInput" type="number" inputmode="decimal" placeholder="Nur die Zahl, z. B. 23" />
+    <p class="small center">Einheit steht in der Frage (z. B. „in Millionen“ → nur 23 eingeben).</p>
     <div class="center">
       <button id="guessBtn" onclick="submitGuess()">Antwort prüfen</button>
     </div>
     <p id="guess-result" style="margin-top:10px;"></p>
   </section>
 
+  <!-- Story-Spiel: Info -->
+  <section id="screen-story-info" class="hidden">
+    <h2>🆕 Spiel 5: Stille Post im Kopf</h2>
+    <p class="info-tag">Neues Spiel – Hardcore</p>
+    <p class="center">
+      Du liest eine völlig verrückte Weihnachtsgeschichte nur einmal.<br>
+      Danach verschwindet der Text und du musst Fragen dazu beantworten.<br>
+      Konzentration lohnt sich – jede richtige Antwort bringt Punkte.
+    </p>
+    <div class="center">
+      <button onclick="startStoryGame()">Story anzeigen ▶️</button>
+    </div>
+  </section>
+
+  <!-- Story-Spiel -->
+  <section id="screen-story" class="hidden">
+    <h2>🧠 Stille Post im Kopf</h2>
+    <div id="story-text" class="story-box"></div>
+    <div id="story-btn-area" class="center" style="margin-top:10px;">
+      <button onclick="startStoryQuestions()">Ich hab's gelesen ▶️</button>
+    </div>
+
+    <div id="story-qa" class="hidden" style="margin-top:10px;">
+      <p id="story-progress" class="center"></p>
+      <h3 id="story-question"></h3>
+      <div id="story-answers" class="center"></div>
+      <p id="story-result" class="center" style="margin-top:10px;"></p>
+    </div>
+  </section>
+
   <!-- Code: Info -->
   <section id="screen-code-info" class="hidden">
-    <h2>🔐 Weihnachts-Code – Infos</h2>
+    <h2>🆕 Spiel 6: Weihnachts-Code</h2>
+    <p class="info-tag">Neues Spiel</p>
     <p class="center">
       Es gibt einen geheimen Code aus 3 Weihnachtssymbolen (🎄 🎁 ⭐ 🎅 🔔).<br>
       Du hast 7 Versuche, den Code zu knacken.<br>
@@ -245,7 +356,8 @@
 
   <!-- Stoppuhr: Info -->
   <section id="screen-timer-info" class="hidden">
-    <h2>⏱ 10-Sekunden-Challenge – Infos</h2>
+    <h2>🆕 Spiel 7: 10-Sekunden-Challenge</h2>
+    <p class="info-tag">Neues Spiel</p>
     <p class="center">
       Versuche, so nah wie möglich an 10,00 Sekunden zu stoppen.<br>
       Nur Gefühl – keine sichtbare Uhr.
@@ -271,7 +383,8 @@
 
   <!-- Geschenk-Bomben: Info -->
   <section id="screen-bomb-info" class="hidden">
-    <h2>🎁 Bomben-Geschenke – Infos</h2>
+    <h2>🆕 Spiel 8: Bomben-Geschenke</h2>
+    <p class="info-tag">Neues Spiel</p>
     <p class="center">
       Sechs Geschenke – eines davon ist eine „Weihnachtsbombe“ 🎅💣.<br>
       Öffne so viele sichere Geschenke wie möglich.<br>
@@ -313,6 +426,7 @@ function show(id) {
     'screen-maze-info','screen-maze',
     'screen-bell-info','screen-bell',
     'screen-guess-info','screen-guess',
+    'screen-story-info','screen-story',
     'screen-code-info','screen-code',
     'screen-timer-info','screen-timer',
     'screen-bomb-info','screen-bomb',
@@ -353,6 +467,7 @@ let quizPoints = 0;
 let labyrinthPoints = 0;
 let bellPoints = 0;
 let guessPoints = 0;
+let storyPoints = 0;
 let codePoints = 0;
 let timerPoints = 0;
 let bombPoints = 0;
@@ -360,7 +475,8 @@ let bombPoints = 0;
 const QUIZ_MAX = 10 * 10;   // 10 Fragen * 10 Punkte
 const LABYRINTH_MAX = 80;
 const BELL_MAX = 30;        // 3 Glocken * 10
-const GUESS_MAX = 8 * 40;   // 8 Schätzfragen
+const GUESS_MAX = 8 * 20;   // 8 Schätzfragen, max 20
+const STORY_MAX = 5 * 10;   // 5 Fragen, 10 Punkte
 const CODE_MAX = 40;
 const TIMER_MAX = 50;
 const BOMB_MAX = 50;        // 5*5 + 20 Bonus
@@ -377,6 +493,7 @@ function goQuizInfo() {
   labyrinthPoints = 0;
   bellPoints = 0;
   guessPoints = 0;
+  storyPoints = 0;
   codePoints = 0;
   timerPoints = 0;
   bombPoints = 0;
@@ -562,418 +679,4 @@ function moveSanta(dx, dy) {
   santa.x = nx;
   santa.y = ny;
   if (mazeMap[ny][nx] === 2) {
-    if (mazeTimerInterval) clearInterval(mazeTimerInterval);
-    mazeTime = (performance.now() - mazeStart) / 1000;
-
-    if (mazeTime < 5)        labyrinthPoints = 80;
-    else if (mazeTime < 6)   labyrinthPoints = 70;
-    else if (mazeTime < 7)   labyrinthPoints = 60;
-    else if (mazeTime < 8)   labyrinthPoints = 50;
-    else                     labyrinthPoints = 30;
-
-    totalPoints += labyrinthPoints;
-    show('screen-bell-info');
-  }
-  drawMaze();
-}
-
-/* ---------- Glocken-Spiel (fixe Glocken bei 3, 8, 14) ---------- */
-const bellSymbolsAll = ["🎄","🎁","⭐","🎅","❄️"];
-let bellSequence = [];
-let bellIndex = -1;
-let bellInterval = null;
-let bellCurrentIsBell = false;
-let bellClickedThisSymbol = false;
-let bellHits = 0;
-let bellFalseClicks = 0;
-let bellFinished = false;
-
-function startBellGame() {
-  show('screen-bell');
-  bellPoints = 0;
-  bellHits = 0;
-  bellFalseClicks = 0;
-  bellIndex = -1;
-  bellFinished = false;
-  document.getElementById('bell-result').textContent = "";
-  document.getElementById('bell-status').textContent =
-    "Tippe nur, wenn eine Glocke (🔔) zu sehen ist.";
-  document.getElementById('bell-button').textContent =
-    "JETZT tippen, wenn Glocke!";
-  generateBellSequenceFixed();
-  if (bellInterval) clearInterval(bellInterval);
-  nextBellSymbol();
-  bellInterval = setInterval(nextBellSymbol, 550);
-}
-
-function generateBellSequenceFixed() {
-  bellSequence = [];
-  for (let i = 0; i < 15; i++) {
-    if (i === 2 || i === 7 || i === 13) {
-      bellSequence.push({ symbol: "🔔", isBell: true });
-    } else {
-      const sym = bellSymbolsAll[i % bellSymbolsAll.length];
-      bellSequence.push({ symbol: sym, isBell: false });
-    }
-  }
-}
-
-function nextBellSymbol() {
-  bellIndex++;
-  if (bellIndex >= bellSequence.length) {
-    endBellGame();
-    return;
-  }
-  const obj = bellSequence[bellIndex];
-  document.getElementById('bell-symbol').textContent = obj.symbol;
-  document.getElementById('bell-progress').textContent =
-    `Symbol ${bellIndex + 1} von ${bellSequence.length}`;
-  bellCurrentIsBell = obj.isBell;
-  bellClickedThisSymbol = false;
-}
-
-function pressBell() {
-  if (!bellFinished) {
-    if (bellCurrentIsBell && !bellClickedThisSymbol) {
-      const pts = 10;
-      bellPoints += pts;
-      bellHits++;
-      bellClickedThisSymbol = true;
-      document.getElementById('bell-status').textContent =
-        `Glocke getroffen! (+${pts} Punkte)`;
-    } else {
-      bellPoints -= 3;
-      bellFalseClicks++;
-      document.getElementById('bell-status').textContent =
-        `Fehlklick! -3 Punkte`;
-    }
-  } else {
-    show('screen-guess-info');
-  }
-}
-
-function endBellGame() {
-  if (bellInterval) clearInterval(bellInterval);
-  bellFinished = true;
-  totalPoints += bellPoints;
-  document.getElementById('bell-result').innerHTML =
-    `Glocken getroffen: <b>${bellHits}</b> von 3<br>` +
-    `Fehlklicks: <b>${bellFalseClicks}</b><br>` +
-    `Punkte im Glocken-Spiel: <b>${bellPoints}</b>`;
-  document.getElementById('bell-status').textContent =
-    "Runde beendet.";
-  document.getElementById('bell-button').textContent =
-    "Weiter zu den Schätzfragen ▶️";
-}
-
-/* ---------- Schätzfragen (8 Stück inkl. Nürnberg-Nordpol) ---------- */
-const guesses = [
-  { q: "Wie viele Christbäume wurden 2024 in Deutschland verkauft? (in Millionen)", correct: 23, unit: "Mio." },
-  { q: "Wie viel Truthahnfleisch wurde 2024 in den USA verzehrt? (in Tausend Tonnen)", correct: 228, unit: "Tsd. Tonnen" },
-  { q: "Wie viele Liter Glühwein trinken die Deutschen pro Jahr? (in Millionen Litern)", correct: 50, unit: "Mio. Liter" },
-  { q: "Wie viele Pakete liefert DHL im Dezember in Deutschland aus? (in Millionen Paketen)", correct: 675, unit: "Mio. Pakete" },
-  { q: "Wie viele Weihnachtsmärkte gibt es in Deutschland? (Anzahl)", correct: 2500, unit: "" },
-  { q: "Wie viele Schoko-Weihnachtsmänner werden in Deutschland pro Jahr produziert? (in Millionen Stück)", correct: 151, unit: "Mio." },
-  { q: "Wie viel Geld gibt eine Person in Deutschland im Schnitt für Weihnachten aus? (in Euro pro Person)", correct: 550, unit: "€" },
-  { q: "Wie weit ist Nürnberg vom Standort des Weihnachtsmanns am Nordpol entfernt? (in Kilometern)", correct: 4200, unit: "km" }
-];
-
-let guessIndex = 0;
-let guessState = 'question';
-
-function startGuessGame() {
-  show('screen-guess');
-  guessIndex = 0;
-  guessPoints = 0;
-  guessState = 'question';
-  renderGuessQuestion();
-}
-
-function renderGuessQuestion() {
-  const g = guesses[guessIndex];
-  document.getElementById('guess-progress').textContent =
-    `Schätzfrage ${guessIndex + 1} von ${guesses.length}`;
-  document.getElementById('guess-question').textContent = g.q;
-  document.getElementById('guessInput').value = "";
-  document.getElementById('guess-result').textContent = "";
-  document.getElementById('guessBtn').textContent = "Antwort prüfen";
-  guessState = 'question';
-}
-
-function submitGuess() {
-  const g = guesses[guessIndex];
-  if (guessState === 'question') {
-    const raw = document.getElementById('guessInput').value.trim().replace(',', '.');
-    const val = parseFloat(raw);
-    if (isNaN(val)) {
-      alert("Bitte eine Zahl eingeben.");
-      return;
-    }
-    const diff = Math.abs(val - g.correct);
-    const diffPercent = (diff / g.correct) * 100;
-    let pts = 5;
-    if (diffPercent <= 5)      pts = 40;
-    else if (diffPercent <=10) pts = 30;
-    else if (diffPercent <=20) pts = 20;
-    else if (diffPercent <=30) pts = 10;
-    guessPoints += pts;
-    totalPoints += pts;
-    document.getElementById('guess-result').innerHTML =
-      `Deine Schätzung: <b>${val} ${g.unit}</b><br>` +
-      `Richtige Antwort: <b>${g.correct} ${g.unit}</b><br>` +
-      `Abweichung: <b>${diffPercent.toFixed(1)}%</b><br>` +
-      `Punkte: <b>${pts}</b>`;
-    guessState = 'answer';
-    document.getElementById('guessBtn').textContent =
-      (guessIndex < guesses.length - 1) ? "Nächste Schätzfrage ▶️" : "Weiter zum Code ▶️";
-  } else {
-    if (guessIndex < guesses.length - 1) {
-      guessIndex++;
-      renderGuessQuestion();
-    } else {
-      show('screen-code-info');
-    }
-  }
-}
-
-/* ---------- Code-Spiel ---------- */
-const codeSymbols = ["🎄","🎁","⭐","🎅","🔔"];
-let secretCode = [];
-let codeAttempt = 0;
-const maxCodeAttempts = 7;
-let codeSolved = false;
-
-function fillCodeSelects() {
-  ['codePos1','codePos2','codePos3'].forEach(id => {
-    const sel = document.getElementById(id);
-    sel.innerHTML = "";
-    codeSymbols.forEach(sym => {
-      const opt = document.createElement('option');
-      opt.value = sym;
-      opt.textContent = sym;
-      sel.appendChild(opt);
-    });
-  });
-}
-
-function startCodeGame() {
-  show('screen-code');
-  fillCodeSelects();
-  const shuffled = [...codeSymbols].sort(() => Math.random() - 0.5);
-  secretCode = shuffled.slice(0,3);
-  codeAttempt = 0;
-  codeSolved = false;
-  document.getElementById('code-log').innerHTML = "";
-  document.getElementById('code-result').textContent = "";
-  const btn = document.getElementById('codeBtn');
-  btn.textContent = "Kombination prüfen";
-  btn.onclick = submitCodeGuess;
-  document.getElementById('code-progress').textContent =
-    `Versuch 1 von ${maxCodeAttempts}`;
-}
-
-function submitCodeGuess() {
-  if (codeSolved || codeAttempt >= maxCodeAttempts) return;
-
-  const g1 = document.getElementById('codePos1').value;
-  const g2 = document.getElementById('codePos2').value;
-  const g3 = document.getElementById('codePos3').value;
-  const guess = [g1,g2,g3];
-
-  codeAttempt++;
-
-  let exact = 0;
-  let partial = 0;
-
-  const secretCopy = [...secretCode];
-  const guessCopy = [...guess];
-
-  for (let i=0; i<3; i++){
-    if (guessCopy[i] === secretCopy[i]) {
-      exact++;
-      secretCopy[i] = null;
-      guessCopy[i] = null;
-    }
-  }
-  for (let i=0; i<3; i++){
-    if (guessCopy[i] !== null) {
-      const idx = secretCopy.indexOf(guessCopy[i]);
-      if (idx !== -1) {
-        partial++;
-        secretCopy[idx] = null;
-        guessCopy[i] = null;
-      }
-    }
-  }
-
-  const log = document.getElementById('code-log');
-  const row = document.createElement('div');
-  row.className = 'code-row';
-  row.textContent =
-    `Versuch ${codeAttempt}: ${g1} ${g2} ${g3} → exakt: ${exact}, falsche Position: ${partial}`;
-  log.appendChild(row);
-
-  const progress = document.getElementById('code-progress');
-  const resultEl = document.getElementById('code-result');
-  const btn = document.getElementById('codeBtn');
-
-  if (exact === 3) {
-    codeSolved = true;
-    if (codeAttempt <= 2)      codePoints = 40;
-    else if (codeAttempt <= 4) codePoints = 25;
-    else                       codePoints = 10;
-    totalPoints += codePoints;
-    progress.textContent = `Code geknackt in ${codeAttempt} Versuchen.`;
-    resultEl.innerHTML = `Punkte im Code-Spiel: <b>${codePoints}</b>`;
-    btn.textContent = "Weiter zur 10-Sekunden-Challenge ▶️";
-    btn.onclick = () => show('screen-timer-info');
-  } else if (codeAttempt >= maxCodeAttempts) {
-    codePoints = 0;
-    progress.textContent = "Keine Versuche mehr übrig.";
-    resultEl.innerHTML = `Code nicht geknackt. Punkte im Code-Spiel: <b>0</b>`;
-    btn.textContent = "Weiter zur 10-Sekunden-Challenge ▶️";
-    btn.onclick = () => show('screen-timer-info');
-  } else {
-    progress.textContent =
-      `Versuch ${codeAttempt + 1} von ${maxCodeAttempts}`;
-  }
-}
-
-/* ---------- 10-Sekunden-Challenge ---------- */
-let timerRunning = false;
-let timerStartTime = 0;
-let timerTime = 0;
-
-function startTimerGame() {
-  show('screen-timer');
-  timerRunning = false;
-  timerTime = 0;
-  document.getElementById('timer-info').textContent =
-    "Drücke „Start“, zähle im Kopf und drücke „Stopp“ möglichst genau bei 10,00 s.";
-  document.getElementById('timer-result').textContent = "";
-  document.getElementById('timerStartBtn').disabled = false;
-  document.getElementById('timerStopBtn').disabled = true;
-  document.getElementById('timer-next').innerHTML = "";
-}
-
-function timerStart() {
-  if (timerRunning) return;
-  timerRunning = true;
-  timerStartTime = performance.now();
-  document.getElementById('timerStartBtn').disabled = true;
-  document.getElementById('timerStopBtn').disabled = false;
-  document.getElementById('timer-info').textContent =
-    "Läuft... Stopp drücken, wenn du glaubst, dass 10,00 s vorbei sind.";
-}
-
-function timerStop() {
-  if (!timerRunning) return;
-  timerRunning = false;
-  timerTime = (performance.now() - timerStartTime) / 1000;
-  document.getElementById('timerStopBtn').disabled = true;
-  const diff = Math.abs(timerTime - 10);
-  let pts = 10;
-  if (diff <= 0.05)      pts = 50;
-  else if (diff <= 0.20) pts = 40;
-  else if (diff <= 0.50) pts = 30;
-  else if (diff <= 1.00) pts = 20;
-
-  timerPoints = pts;
-  totalPoints += pts;
-
-  document.getElementById('timer-result').innerHTML =
-    `Deine Zeit: <b>${timerTime.toFixed(2)} s</b><br>` +
-    `Abweichung von 10,00 s: <b>${diff.toFixed(2)} s</b><br>` +
-    `Punkte in der 10-Sekunden-Challenge: <b>${timerPoints}</b>`;
-
-  document.getElementById('timer-next').innerHTML =
-    `<button onclick="show('screen-bomb-info')">Weiter zum Bomben-Spiel ▶️</button>`;
-}
-
-/* ---------- Geschenk-Bomben-Spiel ---------- */
-let bombIndex = 0;
-let bombOpened = [];
-let bombGameOver = false;
-
-function startBombGame() {
-  show('screen-bomb');
-  bombPoints = 0;
-  bombOpened = [false,false,false,false,false,false];
-  bombGameOver = false;
-  bombIndex = Math.floor(Math.random() * 6);
-  document.getElementById('bomb-result').textContent = "";
-  document.getElementById('bomb-next').innerHTML = "";
-  document.getElementById('bomb-info-label').textContent =
-    "Wähle ein Geschenk – vermeide die Bombe!";
-  const grid = document.getElementById('bomb-grid');
-  grid.innerHTML = "";
-  for (let i=0;i<6;i++) {
-    const btn = document.createElement('button');
-    btn.className = 'gift-btn';
-    btn.textContent = "🎁";
-    btn.onclick = () => openGift(i, btn);
-    grid.appendChild(btn);
-  }
-}
-
-function openGift(i, btn) {
-  if (bombGameOver || bombOpened[i]) return;
-  bombOpened[i] = true;
-  if (i === bombIndex) {
-    // Bombe
-    btn.textContent = "💣";
-    btn.style.background = "#ff6666";
-    bombGameOver = true;
-    document.getElementById('bomb-info-label').textContent =
-      "Boom! Du hast die Bombe erwischt.";
-    document.getElementById('bomb-result').innerHTML =
-      `Punkte im Bomben-Spiel: <b>${bombPoints}</b>`;
-    document.getElementById('bomb-next').innerHTML =
-      `<button onclick="finishGame()">Weiter zum Ergebnis ▶️</button>`;
-  } else {
-    bombPoints += 5;
-    totalPoints += 5;
-    btn.textContent = "✅";
-    btn.style.background = "#66ff99";
-    const safeOpened = bombOpened.filter((v, idx) => v && idx !== bombIndex).length;
-    if (safeOpened === 5) {
-      // alle sicheren geöffnet → Bonus
-      bombPoints += 20;
-      totalPoints += 20;
-      bombGameOver = true;
-      document.getElementById('bomb-info-label').textContent =
-        "Stark! Du hast alle sicheren Geschenke erwischt.";
-      document.getElementById('bomb-result').innerHTML =
-        `Punkte im Bomben-Spiel: <b>${bombPoints}</b>`;
-      document.getElementById('bomb-next').innerHTML =
-        `<button onclick="finishGame()">Weiter zum Ergebnis ▶️</button>`;
-    }
-  }
-}
-
-/* ---------- Ergebnis ---------- */
-function finishGame() {
-  show('screen-result');
-  attempts++;
-  localStorage.setItem('advent_attempts', String(attempts));
-
-  const attemptText = (attempts === 1)
-    ? "Dies war dein erster offizieller Versuch."
-    : "Hinweis: Nur dein erster Versuch zählt.";
-
-  document.getElementById('resultPoints').innerHTML =
-    `${playerName}, du hast insgesamt <b>${totalPoints}</b> Punkte!<br><br>` +
-    `Quiz: <b>${quizPoints}</b> / ${QUIZ_MAX} Punkte<br>` +
-    `Labyrinth: <b>${labyrinthPoints}</b> / ${LABYRINTH_MAX} Punkte<br>` +
-    `Glocken-Spiel: <b>${bellPoints}</b> / ${BELL_MAX} Punkte<br>` +
-    `Schätzfragen: <b>${guessPoints}</b> / ${GUESS_MAX} Punkte<br>` +
-    `Code-Spiel: <b>${codePoints}</b> / ${CODE_MAX} Punkte<br>` +
-    `10-Sekunden-Challenge: <b>${timerPoints}</b> / ${TIMER_MAX} Punkte<br>` +
-    `Bomben-Spiel: <b>${bombPoints}</b> / ${BOMB_MAX} Punkte<br><br>` +
-    `Anzahl der Versuche auf diesem Gerät: <b>${attempts}</b><br>` +
-    attemptText;
-}
-</script>
-
-</body>
-</html>
+    if (mazeTimerInte
