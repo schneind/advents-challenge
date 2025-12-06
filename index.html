@@ -22,7 +22,6 @@
       overflow-x:hidden;
     }
 
-    /* dezente Schneeflocken */
     body::before {
       content:"";
       position:fixed;
@@ -300,7 +299,7 @@
     <p class="center">
       Du liest eine völlig verrückte Weihnachtsgeschichte nur einmal.<br>
       Danach verschwindet der Text und du musst Fragen dazu beantworten.<br>
-      Konzentration lohnt sich – jede richtige Antwort bringt Punkte.
+      Jede richtige Antwort bringt Punkte.
     </p>
     <div class="center">
       <button onclick="startStoryGame()">Story anzeigen ▶️</button>
@@ -398,10 +397,8 @@
   <!-- Geschenk-Bomben-Spiel -->
   <section id="screen-bomb" class="hidden">
     <h2>🎁 Bomben-Geschenke</h2>
-    <p class="center" id="bomb-info-label">Wähle ein Geschenk – aber pass auf die Bombe auf!</p>
-    <div class="gift-grid" id="bomb-grid">
-      <!-- Buttons per JS -->
-    </div>
+    <p class="center" id="bomb-info-label">Wähle ein Geschenk – vermeide die Bombe!</p>
+    <div class="gift-grid" id="bomb-grid"></div>
     <p class="center" id="bomb-result" style="margin-top:10px;"></p>
     <div class="center" id="bomb-next" style="margin-top:10px;"></div>
   </section>
@@ -431,15 +428,15 @@ function show(id) {
     'screen-timer-info','screen-timer',
     'screen-bomb-info','screen-bomb',
     'screen-result'
-  ].forEach(s => {
-    const el = document.getElementById(s);
+  ].forEach(function(s) {
+    var el = document.getElementById(s);
     if (el) el.classList.add('hidden');
   });
   document.getElementById(id).classList.remove('hidden');
 }
 
 function checkPW() {
-  const pw = document.getElementById('pwInput').value.trim();
+  var pw = document.getElementById('pwInput').value.trim();
   if (pw === 'HOTMarco') {
     document.getElementById('pwScreen').style.display = 'none';
     initIntro();
@@ -448,12 +445,12 @@ function checkPW() {
   }
 }
 
-let attempts = Number(localStorage.getItem('advent_attempts') || '0');
+var attempts = Number(localStorage.getItem('advent_attempts') || '0');
 
 function initIntro() {
   show('screen-intro');
   if (attempts > 0) {
-    const info = document.getElementById('attemptInfo');
+    var info = document.getElementById('attemptInfo');
     info.style.display = 'block';
     info.textContent =
       "Hinweis: Auf diesem Gerät wurde schon gespielt. Nur der erste Versuch zählt!";
@@ -461,28 +458,28 @@ function initIntro() {
 }
 
 /* ---------- Globale Scores & Maxima ---------- */
-let playerName = "";
-let totalPoints = 0;
-let quizPoints = 0;
-let labyrinthPoints = 0;
-let bellPoints = 0;
-let guessPoints = 0;
-let storyPoints = 0;
-let codePoints = 0;
-let timerPoints = 0;
-let bombPoints = 0;
+var playerName = "";
+var totalPoints = 0;
+var quizPoints = 0;
+var labyrinthPoints = 0;
+var bellPoints = 0;
+var guessPoints = 0;
+var storyPoints = 0;
+var codePoints = 0;
+var timerPoints = 0;
+var bombPoints = 0;
 
-const QUIZ_MAX = 10 * 10;   // 10 Fragen * 10 Punkte
-const LABYRINTH_MAX = 80;
-const BELL_MAX = 30;        // 3 Glocken * 10
-const GUESS_MAX = 8 * 20;   // 8 Schätzfragen, max 20
-const STORY_MAX = 5 * 10;   // 5 Fragen, 10 Punkte
-const CODE_MAX = 40;
-const TIMER_MAX = 50;
-const BOMB_MAX = 50;        // 5*5 + 20 Bonus
+var QUIZ_MAX = 10 * 10;
+var LABYRINTH_MAX = 80;
+var BELL_MAX = 30;
+var GUESS_MAX = 8 * 20;
+var STORY_MAX = 5 * 10;
+var CODE_MAX = 40;
+var TIMER_MAX = 50;
+var BOMB_MAX = 50;
 
 function goQuizInfo() {
-  const name = document.getElementById('playerName').value.trim();
+  var name = document.getElementById('playerName').value.trim();
   if (!name) {
     alert("Bitte gib deinen Namen ein.");
     return;
@@ -501,7 +498,7 @@ function goQuizInfo() {
 }
 
 /* ---------- Quiz ---------- */
-const quiz = [
+var quiz = [
   {
     q: "Wie schreibt man „Feliz Navidad“ richtig?",
     a: ["Felix Navidad","Feliz Navidat","Felis Navidad","Feliz Navedad","Feliz Navidad"],
@@ -554,7 +551,7 @@ const quiz = [
   }
 ];
 
-let qi = 0;
+var qi = 0;
 
 function startQuiz() {
   qi = 0;
@@ -564,22 +561,22 @@ function startQuiz() {
 }
 
 function renderQuestion() {
-  const qObj = quiz[qi];
+  var qObj = quiz[qi];
   document.getElementById('quiz-progress').textContent =
-    `Frage ${qi + 1} von ${quiz.length}`;
+    "Frage " + (qi + 1) + " von " + quiz.length;
   document.getElementById('quiz-question').textContent = qObj.q;
-  const answersDiv = document.getElementById('quiz-answers');
+  var answersDiv = document.getElementById('quiz-answers');
   answersDiv.innerHTML = '';
-  qObj.a.forEach((ans, i) => {
-    const btn = document.createElement('button');
+  qObj.a.forEach(function(ans, i) {
+    var btn = document.createElement('button');
     btn.textContent = ans;
-    btn.onclick = () => checkAnswer(i);
+    btn.onclick = function() { checkAnswer(i); };
     answersDiv.appendChild(btn);
   });
 }
 
 function checkAnswer(i) {
-  const qObj = quiz[qi];
+  var qObj = quiz[qi];
   if (i === qObj.c) {
     totalPoints += 10;
     quizPoints += 10;
@@ -597,16 +594,16 @@ function checkAnswer(i) {
 }
 
 /* ---------- Labyrinth ---------- */
-let mazeCanvas = null;
-let mazeCtx = null;
-const mazeSize = 10;
-let cellSize = 0;
-let santa = { x: 0, y: 0 };
-let mazeTimerInterval = null;
-let mazeStart = 0;
-let mazeTime = 0;
+var mazeCanvas = null;
+var mazeCtx = null;
+var mazeSize = 10;
+var cellSize = 0;
+var santa = { x: 0, y: 0 };
+var mazeTimerInterval = null;
+var mazeStart = 0;
+var mazeTime = 0;
 
-const mazeMap = [
+var mazeMap = [
   [0,0,1,1,1,1,1,1,1,1],
   [1,0,0,0,1,0,0,0,0,1],
   [1,1,1,0,1,0,1,1,0,1],
@@ -622,7 +619,7 @@ const mazeMap = [
 function setupMazeCanvas() {
   mazeCanvas = document.getElementById('maze');
   mazeCtx = mazeCanvas.getContext('2d');
-  const size = Math.min(360, window.innerWidth - 40);
+  var size = Math.min(360, window.innerWidth - 40);
   mazeCanvas.width = size;
   mazeCanvas.height = size;
   cellSize = size / mazeSize;
@@ -636,7 +633,7 @@ function startMaze() {
   mazeTime = 0;
   document.getElementById('maze-time').textContent = "Zeit: 0,00 s";
   if (mazeTimerInterval) clearInterval(mazeTimerInterval);
-  mazeTimerInterval = setInterval(() => {
+  mazeTimerInterval = setInterval(function() {
     mazeTime = (performance.now() - mazeStart) / 1000;
     document.getElementById('maze-time').textContent =
       "Zeit: " + mazeTime.toFixed(2) + " s";
@@ -645,11 +642,12 @@ function startMaze() {
 }
 
 function drawMaze() {
-  for (let y = 0; y < mazeSize; y++) {
-    for (let x = 0; x < mazeSize; x++) {
-      const v = mazeMap[y][x];
-      const cx = x * cellSize;
-      const cy = y * cellSize;
+  var y, x, v, cx, cy;
+  for (y = 0; y < mazeSize; y++) {
+    for (x = 0; x < mazeSize; x++) {
+      v = mazeMap[y][x];
+      cx = x * cellSize;
+      cy = y * cellSize;
       if (v === 1) {
         mazeCtx.fillStyle = "#04131d";
         mazeCtx.fillRect(cx, cy, cellSize, cellSize);
@@ -663,8 +661,8 @@ function drawMaze() {
       }
     }
   }
-  const sx = santa.x * cellSize + cellSize / 2;
-  const sy = santa.y * cellSize + cellSize / 2;
+  var sx = santa.x * cellSize + cellSize / 2;
+  var sy = santa.y * cellSize + cellSize / 2;
   mazeCtx.fillStyle = "#e74c3c";
   mazeCtx.beginPath();
   mazeCtx.arc(sx, sy, cellSize * 0.3, 0, Math.PI * 2);
@@ -672,11 +670,530 @@ function drawMaze() {
 }
 
 function moveSanta(dx, dy) {
-  const nx = santa.x + dx;
-  const ny = santa.y + dy;
+  var nx = santa.x + dx;
+  var ny = santa.y + dy;
   if (nx < 0 || ny < 0 || nx >= mazeSize || ny >= mazeSize) return;
   if (mazeMap[ny][nx] === 1) return;
   santa.x = nx;
   santa.y = ny;
   if (mazeMap[ny][nx] === 2) {
-    if (mazeTimerInte
+    if (mazeTimerInterval) clearInterval(mazeTimerInterval);
+    mazeTime = (performance.now() - mazeStart) / 1000;
+
+    if (mazeTime < 5)        labyrinthPoints = 80;
+    else if (mazeTime < 6)   labyrinthPoints = 70;
+    else if (mazeTime < 7)   labyrinthPoints = 60;
+    else if (mazeTime < 8)   labyrinthPoints = 50;
+    else                     labyrinthPoints = 30;
+
+    totalPoints += labyrinthPoints;
+    show('screen-bell-info');
+  }
+  drawMaze();
+}
+
+/* ---------- Glocken-Spiel ---------- */
+var bellSymbolsAll = ["🎄","🎁","⭐","🎅","❄️"];
+var bellSequence = [];
+var bellIndex = -1;
+var bellInterval = null;
+var bellCurrentIsBell = false;
+var bellClickedThisSymbol = false;
+var bellHits = 0;
+var bellFalseClicks = 0;
+var bellFinished = false;
+
+function startBellGame() {
+  show('screen-bell');
+  bellPoints = 0;
+  bellHits = 0;
+  bellFalseClicks = 0;
+  bellIndex = -1;
+  bellFinished = false;
+  document.getElementById('bell-result').textContent = "";
+  document.getElementById('bell-status').textContent =
+    "Tippe nur, wenn eine Glocke (🔔) zu sehen ist.";
+  document.getElementById('bell-button').textContent =
+    "JETZT tippen, wenn Glocke!";
+  generateBellSequenceFixed();
+  if (bellInterval) clearInterval(bellInterval);
+  nextBellSymbol();
+  bellInterval = setInterval(nextBellSymbol, 550);
+}
+
+function generateBellSequenceFixed() {
+  bellSequence = [];
+  for (var i = 0; i < 15; i++) {
+    if (i === 2 || i === 7 || i === 13) {
+      bellSequence.push({ symbol: "🔔", isBell: true });
+    } else {
+      var sym = bellSymbolsAll[i % bellSymbolsAll.length];
+      bellSequence.push({ symbol: sym, isBell: false });
+    }
+  }
+}
+
+function nextBellSymbol() {
+  bellIndex++;
+  if (bellIndex >= bellSequence.length) {
+    endBellGame();
+    return;
+  }
+  var obj = bellSequence[bellIndex];
+  document.getElementById('bell-symbol').textContent = obj.symbol;
+  document.getElementById('bell-progress').textContent =
+    "Symbol " + (bellIndex + 1) + " von " + bellSequence.length;
+  bellCurrentIsBell = obj.isBell;
+  bellClickedThisSymbol = false;
+}
+
+function pressBell() {
+  if (!bellFinished) {
+    if (bellCurrentIsBell && !bellClickedThisSymbol) {
+      var pts = 10;
+      bellPoints += pts;
+      bellHits++;
+      bellClickedThisSymbol = true;
+      document.getElementById('bell-status').textContent =
+        "Glocke getroffen! (+" + pts + " Punkte)";
+    } else {
+      bellPoints -= 3;
+      bellFalseClicks++;
+      document.getElementById('bell-status').textContent =
+        "Fehlklick! -3 Punkte";
+    }
+  } else {
+    show('screen-guess-info');
+  }
+}
+
+function endBellGame() {
+  if (bellInterval) clearInterval(bellInterval);
+  bellFinished = true;
+  totalPoints += bellPoints;
+  document.getElementById('bell-result').innerHTML =
+    "Glocken getroffen: <b>" + bellHits + "</b> von 3<br>" +
+    "Fehlklicks: <b>" + bellFalseClicks + "</b><br>" +
+    "Punkte im Glocken-Spiel: <b>" + bellPoints + "</b>";
+  document.getElementById('bell-status').textContent =
+    "Runde beendet.";
+  document.getElementById('bell-button').textContent =
+    "Weiter zu den Schätzfragen ▶️";
+}
+
+/* ---------- Schätzfragen ---------- */
+var guesses = [
+  { q: "Wie viele Christbäume wurden 2024 in Deutschland verkauft? (in Millionen)", correct: 23, unit: "Mio." },
+  { q: "Wie viel Truthahnfleisch wurde 2024 in den USA verzehrt? (in Tausend Tonnen)", correct: 228, unit: "Tsd. Tonnen" },
+  { q: "Wie viele Liter Glühwein trinken die Deutschen pro Jahr? (in Millionen Litern)", correct: 50, unit: "Mio. Liter" },
+  { q: "Wie viele Pakete liefert DHL im Dezember in Deutschland aus? (in Millionen Paketen)", correct: 675, unit: "Mio. Pakete" },
+  { q: "Wie viele Weihnachtsmärkte gibt es in Deutschland? (Anzahl)", correct: 2500, unit: "" },
+  { q: "Wie viele Schoko-Weihnachtsmänner werden in Deutschland pro Jahr produziert? (in Millionen Stück)", correct: 151, unit: "Mio." },
+  { q: "Wie viel Geld gibt eine Person in Deutschland im Schnitt für Weihnachten aus? (in Euro pro Person)", correct: 550, unit: "€" },
+  { q: "Wie weit ist Nürnberg vom Standort des Weihnachtsmanns am Nordpol entfernt? (in Kilometern)", correct: 4200, unit: "km" }
+];
+
+var guessIndex = 0;
+var guessState = 'question';
+
+function startGuessGame() {
+  show('screen-guess');
+  guessIndex = 0;
+  guessPoints = 0;
+  guessState = 'question';
+  renderGuessQuestion();
+}
+
+function renderGuessQuestion() {
+  var g = guesses[guessIndex];
+  document.getElementById('guess-progress').textContent =
+    "Schätzfrage " + (guessIndex + 1) + " von " + guesses.length;
+  document.getElementById('guess-question').textContent = g.q;
+  document.getElementById('guessInput').value = "";
+  document.getElementById('guess-result').textContent = "";
+  document.getElementById('guessBtn').textContent = "Antwort prüfen";
+  guessState = 'question';
+}
+
+function submitGuess() {
+  var g = guesses[guessIndex];
+  if (guessState === 'question') {
+    var raw = document.getElementById('guessInput').value.trim().replace(',', '.');
+    var val = parseFloat(raw);
+    if (isNaN(val)) {
+      alert("Bitte eine Zahl eingeben (nur Zahl, ohne Einheit).");
+      return;
+    }
+    var diff = Math.abs(val - g.correct);
+    var diffPercent = (diff / g.correct) * 100;
+    var pts = 2;
+    if (diffPercent <= 5)      pts = 20;
+    else if (diffPercent <=10) pts = 15;
+    else if (diffPercent <=20) pts = 10;
+    else if (diffPercent <=30) pts = 5;
+
+    guessPoints += pts;
+    totalPoints += pts;
+    document.getElementById('guess-result').innerHTML =
+      "Deine Schätzung: <b>" + val + " " + g.unit + "</b><br>" +
+      "Richtige Antwort: <b>" + g.correct + " " + g.unit + "</b><br>" +
+      "Abweichung: <b>" + diffPercent.toFixed(1) + "%</b><br>" +
+      "Punkte: <b>" + pts + "</b>";
+    guessState = 'answer';
+    document.getElementById('guessBtn').textContent =
+      (guessIndex < guesses.length - 1) ? "Nächste Schätzfrage ▶️" : "Weiter zur Story ▶️";
+  } else {
+    if (guessIndex < guesses.length - 1) {
+      guessIndex++;
+      renderGuessQuestion();
+    } else {
+      show('screen-story-info');
+    }
+  }
+}
+
+/* ---------- Story-Spiel ---------- */
+var storyTextLevel5 = (
+  "Laut einem inoffiziellen Bericht aus dem Jahr 1996, der angeblich von einem Rentier-Praktikanten verfasst wurde, " +
+  "wollte der Weihnachtsmann ursprünglich von Nürnberg aus eine „Transarktische Geschenk-Lieferroute“ eröffnen, " +
+  "nachdem in Lappland die offizielle Genehmigung für nächtlichen Schlittenverkehr wegen Energiesparmaßnahmen entzogen wurde. " +
+  "Unbestätigten Quellen zufolge ging es dabei um genau 14,5 Tonnen Rentier-Heizpellets, " +
+  "die vom „Nordpolministerium für klimaneutrale Nikolauslogistik“ unter Aktenzeichen RN-2487-B erfasst worden sein sollen – " +
+  "allerdings erst nach einem Zwischenfall mit „Rudolphs Experimental-LED-Nase“ am 06.12. um 04:22 Uhr, " +
+  "als ein defekter Glühwein-Kondensator in Finnland durchging und irrtümlich die Sicherheitssirenen für Schlittenlandeverbote auslöste. " +
+  "Experten sind sich jedoch einig, dass entweder die Tonnage, das Aktenzeichen, die Uhrzeit ODER Finnland komplett frei erfunden sein könnten – " +
+  "aber welche der vier Angaben erfunden wurde, sagt natürlich niemand, aus Datenschutzgründen."
+);
+
+var storyQuestions = [
+  {
+    q: "In welcher Stadt sollte die neue Lieferroute ursprünglich starten?",
+    a: ["Lappland","Nürnberg","Finnland","Nordpol","Stockholm"],
+    c: 1
+  },
+  {
+    q: "Warum wurde der nächtliche Schlittenverkehr in Lappland entzogen?",
+    a: ["Schlechtes Wetter","Rentierstreik","Energiesparmaßnahmen","Lärmbeschwerden","Glühweinmangel"],
+    c: 2
+  },
+  {
+    q: "Wie viele Tonnen Rentier-Heizpellets waren geplant?",
+    a: ["14","14,5","145","4,22","2487"],
+    c: 1
+  },
+  {
+    q: "Was löste die Sicherheitssirenen aus?",
+    a: ["Rudolph selbst","Ein defekter Glühwein-Kondensator","Ein Schneesturm","Ein Stromausfall in Nürnberg","Das falsche Aktenzeichen"],
+    c: 1
+  },
+  {
+    q: "Was sagen Experten über Tonnage, Aktenzeichen, Uhrzeit und Finnland?",
+    a: ["Nur die Uhrzeit ist erfunden","Nur Finnland ist erfunden","Nur die Tonnage ist erfunden","Nur das Aktenzeichen ist erfunden","Theoretisch könnten alle erfunden sein"],
+    c: 4
+  }
+];
+
+var storyIndex = 0;
+
+function startStoryGame() {
+  show('screen-story');
+  storyPoints = 0;
+  storyIndex = 0;
+  document.getElementById('story-qa').classList.add('hidden');
+  document.getElementById('story-btn-area').classList.remove('hidden');
+  document.getElementById('story-result').textContent = "";
+  document.getElementById('story-text').textContent = storyTextLevel5;
+}
+
+function startStoryQuestions() {
+  document.getElementById('story-text').textContent =
+    "Der Text ist weg – jetzt kommt die Erinnerung dran. 😈";
+  document.getElementById('story-btn-area').classList.add('hidden');
+  document.getElementById('story-qa').classList.remove('hidden');
+  renderStoryQuestion();
+}
+
+function renderStoryQuestion() {
+  var qObj = storyQuestions[storyIndex];
+  document.getElementById('story-progress').textContent =
+    "Frage " + (storyIndex + 1) + " von " + storyQuestions.length;
+  document.getElementById('story-question').textContent = qObj.q;
+  var answersDiv = document.getElementById('story-answers');
+  answersDiv.innerHTML = '';
+  document.getElementById('story-result').textContent = "";
+  qObj.a.forEach(function(ans, i) {
+    var btn = document.createElement('button');
+    btn.textContent = ans;
+    btn.onclick = function() { checkStoryAnswer(i); };
+    answersDiv.appendChild(btn);
+  });
+}
+
+function checkStoryAnswer(i) {
+  var qObj = storyQuestions[storyIndex];
+  var res = document.getElementById('story-result');
+  if (i === qObj.c) {
+    storyPoints += 10;
+    totalPoints += 10;
+    res.textContent = "Richtig! +10 Punkte.";
+  } else {
+    res.textContent = "Falsch – keine Punkte, aber Respekt fürs Mitlesen.";
+  }
+  storyIndex++;
+  if (storyIndex < storyQuestions.length) {
+    setTimeout(function() {
+      renderStoryQuestion();
+    }, 900);
+  } else {
+    setTimeout(function() {
+      show('screen-code-info');
+    }, 900);
+  }
+}
+
+/* ---------- Code-Spiel ---------- */
+var codeSymbols = ["🎄","🎁","⭐","🎅","🔔"];
+var secretCode = [];
+var codeAttempt = 0;
+var maxCodeAttempts = 7;
+var codeSolved = false;
+
+function fillCodeSelects() {
+  ['codePos1','codePos2','codePos3'].forEach(function(id) {
+    var sel = document.getElementById(id);
+    sel.innerHTML = "";
+    codeSymbols.forEach(function(sym) {
+      var opt = document.createElement('option');
+      opt.value = sym;
+      opt.textContent = sym;
+      sel.appendChild(opt);
+    });
+  });
+}
+
+function startCodeGame() {
+  show('screen-code');
+  fillCodeSelects();
+  var shuffled = codeSymbols.slice().sort(function() { return Math.random() - 0.5; });
+  secretCode = shuffled.slice(0,3);
+  codeAttempt = 0;
+  codeSolved = false;
+  document.getElementById('code-log').innerHTML = "";
+  document.getElementById('code-result').textContent = "";
+  var btn = document.getElementById('codeBtn');
+  btn.textContent = "Kombination prüfen";
+  btn.onclick = submitCodeGuess;
+  document.getElementById('code-progress').textContent =
+    "Versuch 1 von " + maxCodeAttempts;
+}
+
+function submitCodeGuess() {
+  if (codeSolved || codeAttempt >= maxCodeAttempts) return;
+
+  var g1 = document.getElementById('codePos1').value;
+  var g2 = document.getElementById('codePos2').value;
+  var g3 = document.getElementById('codePos3').value;
+  var guess = [g1,g2,g3];
+
+  codeAttempt++;
+
+  var exact = 0;
+  var partial = 0;
+
+  var secretCopy = secretCode.slice();
+  var guessCopy = guess.slice();
+
+  var i, idx;
+  for (i=0; i<3; i++){
+    if (guessCopy[i] === secretCopy[i]) {
+      exact++;
+      secretCopy[i] = null;
+      guessCopy[i] = null;
+    }
+  }
+  for (i=0; i<3; i++){
+    if (guessCopy[i] !== null) {
+      idx = secretCopy.indexOf(guessCopy[i]);
+      if (idx !== -1) {
+        partial++;
+        secretCopy[idx] = null;
+        guessCopy[i] = null;
+      }
+    }
+  }
+
+  var log = document.getElementById('code-log');
+  var row = document.createElement('div');
+  row.className = 'code-row';
+  row.textContent =
+    "Versuch " + codeAttempt + ": " + g1 + " " + g2 + " " + g3 +
+    " → exakt: " + exact + ", falsche Position: " + partial;
+  log.appendChild(row);
+
+  var progress = document.getElementById('code-progress');
+  var resultEl = document.getElementById('code-result');
+  var btn = document.getElementById('codeBtn');
+
+  if (exact === 3) {
+    codeSolved = true;
+    if (codeAttempt <= 2)      codePoints = 40;
+    else if (codeAttempt <= 4) codePoints = 25;
+    else                       codePoints = 10;
+    totalPoints += codePoints;
+    progress.textContent = "Code geknackt in " + codeAttempt + " Versuchen.";
+    resultEl.innerHTML = "Punkte im Code-Spiel: <b>" + codePoints + "</b>";
+    btn.textContent = "Weiter zur 10-Sekunden-Challenge ▶️";
+    btn.onclick = function() { show('screen-timer-info'); };
+  } else if (codeAttempt >= maxCodeAttempts) {
+    codePoints = 0;
+    progress.textContent = "Keine Versuche mehr übrig.";
+    resultEl.innerHTML = "Code nicht geknackt. Punkte im Code-Spiel: <b>0</b>";
+    btn.textContent = "Weiter zur 10-Sekunden-Challenge ▶️";
+    btn.onclick = function() { show('screen-timer-info'); };
+  } else {
+    progress.textContent =
+      "Versuch " + (codeAttempt + 1) + " von " + maxCodeAttempts;
+  }
+}
+
+/* ---------- 10-Sekunden-Challenge ---------- */
+var timerRunning = false;
+var timerStartTime = 0;
+var timerTime = 0;
+
+function startTimerGame() {
+  show('screen-timer');
+  timerRunning = false;
+  timerTime = 0;
+  document.getElementById('timer-info').textContent =
+    "Drücke „Start“, zähle im Kopf und drücke „Stopp“ möglichst genau bei 10,00 s.";
+  document.getElementById('timer-result').textContent = "";
+  document.getElementById('timerStartBtn').disabled = false;
+  document.getElementById('timerStopBtn').disabled = true;
+  document.getElementById('timer-next').innerHTML = "";
+}
+
+function timerStart() {
+  if (timerRunning) return;
+  timerRunning = true;
+  timerStartTime = performance.now();
+  document.getElementById('timerStartBtn').disabled = true;
+  document.getElementById('timerStopBtn').disabled = false;
+  document.getElementById('timer-info').textContent =
+    "Läuft... Stopp drücken, wenn du glaubst, dass 10,00 s vorbei sind.";
+}
+
+function timerStop() {
+  if (!timerRunning) return;
+  timerRunning = false;
+  timerTime = (performance.now() - timerStartTime) / 1000;
+  document.getElementById('timerStopBtn').disabled = true;
+  var diff = Math.abs(timerTime - 10);
+  var pts = 10;
+  if (diff <= 0.05)      pts = 50;
+  else if (diff <= 0.20) pts = 40;
+  else if (diff <= 0.50) pts = 30;
+  else if (diff <= 1.00) pts = 20;
+
+  timerPoints = pts;
+  totalPoints += pts;
+
+  document.getElementById('timer-result').innerHTML =
+    "Deine Zeit: <b>" + timerTime.toFixed(2) + " s</b><br>" +
+    "Abweichung von 10,00 s: <b>" + diff.toFixed(2) + " s</b><br>" +
+    "Punkte in der 10-Sekunden-Challenge: <b>" + timerPoints + "</b>";
+
+  document.getElementById('timer-next').innerHTML =
+    '<button onclick="show(\\'screen-bomb-info\\')">Weiter zum Bomben-Spiel ▶️</button>';
+}
+
+/* ---------- Geschenk-Bomben-Spiel ---------- */
+var bombIndex = 0;
+var bombOpened = [];
+var bombGameOver = false;
+
+function startBombGame() {
+  show('screen-bomb');
+  bombPoints = 0;
+  bombOpened = [false,false,false,false,false,false];
+  bombGameOver = false;
+  bombIndex = Math.floor(Math.random() * 6);
+  document.getElementById('bomb-result').textContent = "";
+  document.getElementById('bomb-next').innerHTML = "";
+  document.getElementById('bomb-info-label').textContent =
+    "Wähle ein Geschenk – vermeide die Bombe!";
+  var grid = document.getElementById('bomb-grid');
+  grid.innerHTML = "";
+  for (var i=0;i<6;i++) {
+    (function(idx) {
+      var btn = document.createElement('button');
+      btn.className = 'gift-btn';
+      btn.textContent = "🎁";
+      btn.onclick = function() { openGift(idx, btn); };
+      grid.appendChild(btn);
+    })(i);
+  }
+}
+
+function openGift(i, btn) {
+  if (bombGameOver || bombOpened[i]) return;
+  bombOpened[i] = true;
+  if (i === bombIndex) {
+    btn.textContent = "💣";
+    btn.style.background = "#ff6666";
+    bombGameOver = true;
+    document.getElementById('bomb-info-label').textContent =
+      "Boom! Du hast die Bombe erwischt.";
+    document.getElementById('bomb-result').innerHTML =
+      "Punkte im Bomben-Spiel: <b>" + bombPoints + "</b>";
+    document.getElementById('bomb-next').innerHTML =
+      '<button onclick="finishGame()">Weiter zum Ergebnis ▶️</button>';
+  } else {
+    bombPoints += 5;
+    totalPoints += 5;
+    btn.textContent = "✅";
+    btn.style.background = "#66ff99";
+    var safeOpened = bombOpened.filter(function(v, idx) {
+      return v && idx !== bombIndex;
+    }).length;
+    if (safeOpened === 5) {
+      bombPoints += 20;
+      totalPoints += 20;
+      bombGameOver = true;
+      document.getElementById('bomb-info-label').textContent =
+        "Stark! Du hast alle sicheren Geschenke erwischt.";
+      document.getElementById('bomb-result').innerHTML =
+        "Punkte im Bomben-Spiel: <b>" + bombPoints + "</b>";
+      document.getElementById('bomb-next').innerHTML =
+        '<button onclick="finishGame()">Weiter zum Ergebnis ▶️</button>';
+    }
+  }
+}
+
+/* ---------- Ergebnis ---------- */
+function finishGame() {
+  show('screen-result');
+  attempts++;
+  localStorage.setItem('advent_attempts', String(attempts));
+
+  var attemptText = (attempts === 1)
+    ? "Dies war dein erster offizieller Versuch."
+    : "Hinweis: Nur dein erster Versuch zählt.";
+
+  document.getElementById('resultPoints').innerHTML =
+    playerName + ", du hast insgesamt <b>" + totalPoints + "</b> Punkte!<br><br>" +
+    "Quiz: <b>" + quizPoints + "</b> / " + QUIZ_MAX + " Punkte<br>" +
+    "Labyrinth: <b>" + labyrinthPoints + "</b> / " + LABYRINTH_MAX + " Punkte<br>" +
+    "Glocken-Spiel: <b>" + bellPoints + "</b> / " + BELL_MAX + " Punkte<br>" +
+    "Schätzfragen: <b>" + guessPoints + "</b> / " + GUESS_MAX + " Punkte<br>" +
+    "Stille-Post-Story: <b>" + storyPoints + "</b> / " + STORY_MAX + " Punkte<br>" +
+    "Code-Spiel: <b>" + codePoints + "</b> / " + CODE_MAX + " Punkte<br>" +
+    "10-Sekunden-Challenge: <b>" + timerPoints + "</b> / " + TIMER_MAX + " Punkte<br>" +
+    "Bomben-Spiel: <b>" + bombPoints + "</b> / " + BOMB_MAX + " Punkte<br><br>" +
+    "Anzahl der Versuche auf diesem Gerät: <b>" + attempts + "</b><br>" +
+    attemptText;
+}
+</script>
+
+</body>
+</html>
