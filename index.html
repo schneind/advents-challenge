@@ -304,7 +304,7 @@
     <h2>📏 Schätzfragen</h2>
     <p id="guess-progress" class="center"></p>
     <h3 id="guess-question"></h3>
-    <input id="guessInput" type="number" inputmode="decimal" placeholder="Nur die Zahl, z. B. 17" />
+    <input id="guessInput" type="number" inputmode="decimal" placeholder="Deine Zahl" />
     <p class="small center">Einheit steht in der Frage (z. B. „in Millionen“ → nur 17 eingeben).</p>
     <div class="center">
       <button id="guessBtn" onclick="submitGuess()">Antwort prüfen</button>
@@ -492,7 +492,7 @@ var bombPoints = 0;
 var QUIZ_MAX = 10 * 10;
 var LABYRINTH_MAX = 80;
 var BELL_MAX = 30;
-var GUESS_MAX = 8 * 20;
+var GUESS_MAX = 8 * 30;
 var STORY_MAX = 5 * 10;
 var CODE_MAX = 40;
 var TIMER_MAX = 50;
@@ -566,7 +566,7 @@ var quiz = [
   },
   {
     q: "Wer ist gleich nochmal HOT?",
-    a: ["Bene","Simon","Der Weihnachtsmann","Der Grinch","Marco"],
+    a: ["Bene","Christian","Der Weihnachtsmann","Der Grinch","Marco"],
     c: 4
   }
 ];
