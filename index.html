@@ -1,1211 +1,384 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-  />
-  <title>Advents-Challenge Finale</title>
-  <style>
-    * { box-sizing: border-box; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>🎄 Advents-Challenge</title>
 
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      /* Einfacherer Verlauf, keine mehrfachen „Lichter“ mehr */
-      background: linear-gradient(180deg, #b31217 0%, #1a2a6c 60%, #000814 100%);
-      margin:0;
-      padding:16px;
-      color:#fff;
-      -webkit-user-select:none;
-      user-select:none;
-      position:relative;
-      overflow-x:hidden;
-    }
-
-    body::before {
-      content:"";
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      background-image:
-        radial-gradient(2px 2px at 10% 20%, rgba(255,255,255,0.55) 50%, transparent 50%),
-        radial-gradient(2px 2px at 80% 10%, rgba(255,255,255,0.4) 50%, transparent 50%),
-        radial-gradient(2px 2px at 50% 80%, rgba(255,255,255,0.35) 50%, transparent 50%);
-      background-size: 200px 300px, 260px 320px, 220px 260px;
-      animation: snow 30s linear infinite;
-      z-index:-1;
-      opacity:0.7;
-    }
-
-    @keyframes snow {
-      from { transform: translateY(-50px); }
-      to   { transform: translateY(50px); }
-    }
-
-    .card {
-      max-width:700px;
-      margin:0 auto;
-      background:rgba(0,0,0,0.35);
-      padding:20px;
-      border-radius:20px;
-      box-shadow:0 10px 30px rgba(0,0,0,0.5);
-      border:1px solid rgba(255,255,255,0.18);
-    }
-
-    .hidden { display:none; }
-
-    h1,h2,h3 {
-      text-align:center;
-      margin:0 0 10px 0;
-      text-shadow:0 2px 4px rgba(0,0,0,0.45);
-    }
-
-    h1 { font-size:28px; }
-    h2 { font-size:22px; }
-    h3 { font-size:18px; }
-
-    p { margin:6px 0; }
-
-    .center { text-align:center; }
-
-    button {
-      padding:12px 20px;
-      border:none;
-      border-radius:12px;
-      cursor:pointer;
-      background:linear-gradient(135deg,#ffd166,#ffb347);
-      color:#3b2710;
-      margin:6px;
-      font-weight:600;
-      box-shadow:0 4px 12px rgba(0,0,0,0.35);
-      font-size:16px;
-      touch-action:manipulation;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    button:active {
-      transform:translateY(1px);
-      box-shadow:0 2px 6px rgba(0,0,0,0.4);
-    }
-
-    input {
-      width:100%;
-      padding:10px;
-      border-radius:10px;
-      border:none;
-      margin:8px 0;
-      font-size:16px;
-    }
-
-    #maze {
-      display:block;
-      margin:0 auto 8px;
-      background:#001018;
-      border-radius:12px;
-      border:2px solid #fff;
-      max-width:100%;
-      touch-action:none;
-    }
-
-    .big-symbol {
-      font-size:64px;
-      text-align:center;
-      margin:16px 0;
-    }
-
-    select {
-      font-size:16px;
-      padding:6px;
-      margin:4px;
-      border-radius:8px;
-      border:none;
-    }
-
-    .small { font-size:13px; opacity:0.9; }
-
-    .code-row { font-size:14px; margin:4px 0; }
-
-    .gift-grid {
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:8px;
-      margin-top:10px;
-    }
-
-    .gift-btn {
-      width:100%;
-      padding:14px 8px;
-      font-size:20px;
-    }
-
-    .info-tag {
-      display:inline-block;
-      padding:2px 8px;
-      border-radius:999px;
-      background:rgba(255,255,255,0.15);
-      font-size:12px;
-      margin-bottom:6px;
-    }
-
-    .story-box {
-      background:rgba(0,0,0,0.35);
-      border-radius:12px;
-      padding:10px 12px;
-      border:1px solid rgba(255,255,255,0.15);
-      max-height:220px;
-      overflow-y:auto;
-      font-size:14px;
-      line-height:1.4;
-    }
-  </style>
+<style>
+*{box-sizing:border-box}
+body{
+margin:0;
+padding:16px;
+font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+color:#fff;
+user-select:none;
+background:
+linear-gradient(rgba(0,0,0,.65),rgba(0,0,0,.65)),
+url("bg.png") center/cover no-repeat fixed;
+}
+.card{
+max-width:720px;
+margin:auto;
+background:rgba(0,0,0,.35);
+padding:20px;
+border-radius:20px;
+border:1px solid rgba(255,255,255,.2);
+}
+.hidden{display:none}
+h1,h2,h3{text-align:center;margin:0 0 10px}
+p{text-align:center}
+button{
+padding:12px 20px;
+border:none;
+border-radius:12px;
+cursor:pointer;
+background:linear-gradient(135deg,#ffd166,#ffb347);
+font-weight:700;
+margin:6px;
+}
+.big-red{
+width:120px;
+height:120px;
+border-radius:50%;
+background:#c62828;
+color:#fff;
+font-size:20px;
+box-shadow:0 0 20px rgba(255,0,0,.6);
+}
+input{
+width:100%;
+padding:10px;
+border-radius:10px;
+border:none;
+margin:8px 0;
+font-size:16px;
+}
+.story-box{
+background:rgba(0,0,0,.4);
+padding:12px;
+border-radius:12px;
+max-height:220px;
+overflow:auto;
+font-size:14px;
+line-height:1.4;
+}
+.gift-grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:8px;
+}
+.gift-btn{
+font-size:22px;
+padding:14px;
+}
+canvas{background:#022;border-radius:12px}
+</style>
 </head>
+
 <body>
 
-<!-- Passwort-Screen -->
-<div id="pwScreen" style="text-align:center; padding:40px 20px;">
-  <h2>🔐 Passwort eingeben</h2>
-  <p class="small">Das Passwort hast du per SMS bekommen.</p>
-  <input id="pwInput" type="password" placeholder="Passwort" />
-  <button onclick="checkPW()">Weiter</button>
-  <p id="pwError" style="color:#ffaaaa; display:none; margin-top:8px;">Falsches Passwort!</p>
+<!-- PASSWORT -->
+<div id="pwScreen" style="text-align:center;padding:40px">
+<h2>🔐 Passwort</h2>
+<input id="pwInput" type="password" placeholder="Passwort">
+<button onclick="checkPW()">Start</button>
+<p id="pwError" style="color:#ff9999;display:none">Falsches Passwort</p>
 </div>
 
-<div class="card">
+<div id="game" class="card hidden">
 
-  <!-- Intro -->
-  <section id="screen-intro" class="hidden">
-    <h1>🎄 Advents-Challenge</h1>
-    <p id="attemptInfo" style="color:#ffdddd; font-weight:600; display:none; text-align:center;"></p>
-    <p>Name eingeben:</p>
-    <!-- Beispiel wieder Janine <3 -->
-    <input id="playerName" placeholder="z. B. Janine &lt;3" />
-    <div class="center">
-      <button onclick="goQuizInfo()">Los geht's ▶️</button>
-    </div>
-  </section>
+<!-- INTRO -->
+<section id="intro">
+<h1>🎄 Advents-Challenge</h1>
+<input id="playerName" placeholder="Dein Name">
+<button onclick="startQuiz()">Los geht’s ▶️</button>
+</section>
 
-  <!-- Quiz: Info -->
-  <section id="screen-quiz-info" class="hidden">
-    <h2>🆕 Spiel 1: Quiz</h2>
-    <p class="info-tag">Neues Spiel</p>
-    <p class="center">
-      10 Weihnachtsfragen mit je 5 Antwortmöglichkeiten.<br>
-      ✅ Richtig: +10 Punkte &nbsp;&nbsp; ❌ Falsch: -1 Punkt
-    </p>
-    <div class="center">
-      <button onclick="startQuiz()">Quiz starten ▶️</button>
-    </div>
-  </section>
+<!-- QUIZ -->
+<section id="quiz" class="hidden">
+<h2>❄️ Quiz</h2>
+<p id="quizQ"></p>
+<div id="quizA"></div>
+</section>
 
-  <!-- Quiz -->
-  <section id="screen-quiz" class="hidden">
-    <h2>❄️ Quiz</h2>
-    <p id="quiz-progress" class="center"></p>
-    <h3 id="quiz-question"></h3>
-    <div id="quiz-answers" class="center"></div>
-  </section>
+<!-- LABYRINTH INFO -->
+<section id="mazeInfo" class="hidden">
+<h2>🎅 Labyrinth</h2>
+<p>Finde den Weg zur Geschenk-Kiste.</p>
+<button onclick="startMaze()">Start ▶️</button>
+</section>
 
-  <!-- Labyrinth: Info -->
-  <section id="screen-maze-info" class="hidden">
-    <h2>🆕 Spiel 2: Labyrinth</h2>
-    <p class="info-tag">Neues Spiel</p>
-    <p class="center">
-      Steuere den Nikolaus zur goldenen Geschenk-Kiste 🎁<br><br>
-      Punkte nach Zeit:<br>
-      &lt; 5 s → 80 Punkte<br>
-      5–6 s → 70 Punkte<br>
-      6–7 s → 60 Punkte<br>
-      7–8 s → 50 Punkte<br>
-      &gt; 8 s → 30 Punkte
-    </p>
-    <div class="center">
-      <button onclick="startMaze()">Labyrinth starten ▶️</button>
-    </div>
-  </section>
+<!-- LABYRINTH -->
+<section id="mazeScreen" class="hidden">
+<canvas id="maze" width="320" height="320"></canvas>
+<p id="mazeTime"></p>
+<div style="text-align:center">
+<button onclick="moveSanta(0,-1)">⬆️</button><br>
+<button onclick="moveSanta(-1,0)">⬅️</button>
+<button onclick="moveSanta(1,0)">➡️</button><br>
+<button onclick="moveSanta(0,1)">⬇️</button>
+</div>
+</section>
 
-  <!-- Labyrinth -->
-  <section id="screen-maze" class="hidden">
-    <h2>🎅 Nikolaus im Labyrinth</h2>
-    <p id="maze-time" class="center" style="margin-bottom:4px;">Zeit: 0,00 s</p>
-    <canvas id="maze"></canvas>
-    <div class="center">
-      <button onclick="moveSanta(0,-1)">⬆️</button><br />
-      <button onclick="moveSanta(-1,0)">⬅️</button>
-      <button onclick="moveSanta(1,0)">➡️</button><br />
-      <button onclick="moveSanta(0,1)">⬇️</button>
-    </div>
-  </section>
+<!-- GLOCKE -->
+<section id="bell" class="hidden">
+<h2>🔔 Glocken-Reflex</h2>
+<div id="bellSymbol" style="font-size:64px;text-align:center">❄️</div>
+<div style="text-align:center">
+<button id="bellStart" onclick="startBell()">Start</button><br>
+<button id="bellBtn" class="big-red hidden" onclick="pressBell()">DRÜCKEN</button>
+</div>
+<p id="bellInfo" style="text-align:center"></p>
+</section>
 
-  <!-- Glocken-Spiel: Info -->
-  <section id="screen-bell-info" class="hidden">
-    <h2>🆕 Spiel 3: Glocken-Reflex</h2>
-    <p class="info-tag">Neues Spiel</p>
-    <p class="center">
-      Es werden nacheinander 15 Symbole angezeigt, davon 3 Glocken (🔔).<br>
-      Tippe nur, wenn eine Glocke zu sehen ist.<br>
-      Richtige Glocke: +10 Punkte, Fehlklick: -3 Punkte.
-    </p>
-    <div class="center">
-      <button onclick="startBellGame()">Glocken-Spiel starten ▶️</button>
-    </div>
-  </section>
+<!-- SCHÄTZFRAGEN -->
+<section id="guess" class="hidden">
+<h2>📏 Schätzfragen</h2>
+<p id="guessQ"></p>
+<input id="guessInput" placeholder="z. B. 17">
+<p id="guessRes"></p>
+</section>
 
-  <!-- Glocken-Spiel -->
-  <section id="screen-bell" class="hidden">
-    <h2>🔔 Glocken-Reflex</h2>
-    <p id="bell-progress" class="center"></p>
-    <div id="bell-symbol" class="big-symbol">❄️</div>
-    <p id="bell-status" class="center small">
-      Tippe nur, wenn eine Glocke (🔔) zu sehen ist.
-    </p>
-    <div class="center">
-      <button id="bell-button" onclick="pressBell()">JETZT tippen, wenn Glocke!</button>
-    </div>
-    <p id="bell-result" class="center"></p>
-  </section>
+<!-- STORY -->
+<section id="story" class="hidden">
+<h2>🕵️ True-Crime-Story</h2>
+<div class="story-box" id="storyText"></div>
+<button onclick="startStoryQ()">Gelesen ▶️</button>
+<div id="storyQ" class="hidden"></div>
+</section>
 
-  <!-- Schätzfragen: Info -->
-  <section id="screen-guess-info" class="hidden">
-    <h2>🆕 Spiel 4: Schätzfragen</h2>
-    <p class="info-tag">Neues Spiel</p>
-    <p class="center">
-      Du bekommst acht Schätzfragen mit Weihnachtsbezug.<br>
-      Wichtig: Gib immer nur die Zahl ein – die Einheit steht in der Frage.<br>
-      Beispiel: Steht „in Millionen“, dann gib „23“ ein (für 23.000.000).<br>
-      Je genauer du schätzt, desto mehr Punkte.
-    </p>
-    <div class="center">
-      <button onclick="startGuessGame()">Schätzfragen starten ▶️</button>
-    </div>
-  </section>
+<!-- TIMER -->
+<section id="timer" class="hidden">
+<h2>⏱ 10-Sekunden-Challenge</h2>
+<button id="timerBtn" onclick="toggleTimer()">Start</button>
+<p id="timerRes"></p>
+</section>
 
-  <!-- Schätzfragen -->
-  <section id="screen-guess" class="hidden">
-    <h2>📏 Schätzfragen</h2>
-    <p id="guess-progress" class="center"></p>
-    <h3 id="guess-question"></h3>
-    <input id="guessInput" type="number" inputmode="decimal" placeholder="Nur die Zahl, z. B. 23" />
-    <p class="small center">Einheit steht in der Frage (z. B. „in Millionen“ → nur 23 eingeben).</p>
-    <div class="center">
-      <button id="guessBtn" onclick="submitGuess()">Antwort prüfen</button>
-    </div>
-    <p id="guess-result" style="margin-top:10px;"></p>
-  </section>
+<!-- BOMBEN -->
+<section id="bomb" class="hidden">
+<h2>🎁 Bomben-Geschenke</h2>
+<div class="gift-grid" id="bombGrid"></div>
+<p id="bombRes"></p>
+</section>
 
-  <!-- Story-Spiel: Info -->
-  <section id="screen-story-info" class="hidden">
-    <h2>🆕 Spiel 5: Stille Post im Kopf</h2>
-    <p class="info-tag">Neues Spiel – Hardcore</p>
-    <!-- Text geändert: keine Erwähnung von Fragen -->
-    <p class="center">
-      Lies die folgende Weihnachtsgeschichte aufmerksam.<br>
-      Mehr verrate ich nicht. 😈
-    </p>
-    <div class="center">
-      <button onclick="startStoryGame()">Story anzeigen ▶️</button>
-    </div>
-  </section>
-
-  <!-- Story-Spiel -->
-  <section id="screen-story" class="hidden">
-    <h2>🧠 Stille Post im Kopf</h2>
-    <div id="story-text" class="story-box"></div>
-    <div id="story-btn-area" class="center" style="margin-top:10px;">
-      <button onclick="startStoryQuestions()">Ich hab's gelesen ▶️</button>
-    </div>
-
-    <div id="story-qa" class="hidden" style="margin-top:10px;">
-      <p id="story-progress" class="center"></p>
-      <h3 id="story-question"></h3>
-      <div id="story-answers" class="center"></div>
-      <p id="story-result" class="center" style="margin-top:10px;"></p>
-    </div>
-  </section>
-
-  <!-- Code: Info -->
-  <section id="screen-code-info" class="hidden">
-    <h2>🆕 Spiel 6: Weihnachts-Code</h2>
-    <p class="info-tag">Neues Spiel</p>
-    <p class="center">
-      Es gibt einen geheimen Code aus 3 Weihnachtssymbolen (🎄 🎁 ⭐ 🎅 🔔).<br>
-      Du hast 7 Versuche, den Code zu knacken.<br>
-      Nach jedem Versuch bekommst du Hinweise.<br>
-      Hinweis: Jedes Symbol kommt höchstens einmal im Code vor.
-    </p>
-    <div class="center">
-      <button onclick="startCodeGame()">Code-Spiel starten ▶️</button>
-    </div>
-  </section>
-
-  <!-- Code-Spiel -->
-  <section id="screen-code" class="hidden">
-    <h2>🔐 Weihnachts-Code knacken</h2>
-    <p id="code-progress" class="center"></p>
-    <div class="center">
-      <select id="codePos1"></select>
-      <select id="codePos2"></select>
-      <select id="codePos3"></select>
-    </div>
-    <div class="center" style="margin-top:8px;">
-      <button id="codeBtn" onclick="submitCodeGuess()">Kombination prüfen</button>
-    </div>
-    <div id="code-log" style="margin-top:10px;"></div>
-    <p id="code-result" class="center"></p>
-  </section>
-
-  <!-- Stoppuhr: Info -->
-  <section id="screen-timer-info" class="hidden">
-    <h2>🆕 Spiel 7: 10-Sekunden-Challenge</h2>
-    <p class="info-tag">Neues Spiel</p>
-    <p class="center">
-      Versuche, so nah wie möglich an 10,00 Sekunden zu stoppen.<br>
-      Nur Gefühl – keine sichtbare Uhr.
-    </p>
-    <div class="center">
-      <button onclick="startTimerGame()">Challenge starten ▶️</button>
-    </div>
-  </section>
-
-  <!-- Stoppuhr-Spiel -->
-  <section id="screen-timer" class="hidden">
-    <h2>⏱ 10-Sekunden-Challenge</h2>
-    <p class="center" id="timer-info">
-      Drücke „Start“, zähle im Kopf und drücke „Stopp“ möglichst genau bei 10,00 s.
-    </p>
-    <div class="center">
-      <button id="timerStartBtn" onclick="timerStart()">Start</button>
-      <button id="timerStopBtn" onclick="timerStop()" disabled>Stopp</button>
-    </div>
-    <p id="timer-result" class="center" style="margin-top:10px;"></p>
-    <div class="center" id="timer-next" style="margin-top:10px;"></div>
-  </section>
-
-  <!-- Geschenk-Bomben: Info -->
-  <section id="screen-bomb-info" class="hidden">
-    <h2>🆕 Spiel 8: Bomben-Geschenke</h2>
-    <p class="info-tag">Neues Spiel</p>
-    <p class="center">
-      Sechs Geschenke – eines davon ist eine „Weihnachtsbombe“ 🎅💣.<br>
-      Öffne so viele sichere Geschenke wie möglich.<br>
-      Jede sichere Box: +5 Punkte, alle sicher geöffnet: +20 Bonus.
-    </p>
-    <div class="center">
-      <button onclick="startBombGame()">Bomben-Spiel starten ▶️</button>
-    </div>
-  </section>
-
-  <!-- Geschenk-Bomben-Spiel -->
-  <section id="screen-bomb" class="hidden">
-    <h2>🎁 Bomben-Geschenke</h2>
-    <p class="center" id="bomb-info-label">Wähle ein Geschenk – vermeide die Bombe!</p>
-    <div class="gift-grid" id="bomb-grid"></div>
-    <p class="center" id="bomb-result" style="margin-top:10px;"></p>
-    <div class="center" id="bomb-next" style="margin-top:10px;"></div>
-  </section>
-
-  <!-- Ergebnis -->
-  <section id="screen-result" class="hidden">
-    <h2>🏆 Ergebnis</h2>
-    <p id="resultPoints" class="center"></p>
-    <p class="center" style="margin-top:12px;">
-      📸 Mach einen Screenshot von diesem Bildschirm<br />
-      und schicke ihn in die Gruppe. Für die Wertung zählt nur dein erster Versuch.
-    </p>
-  </section>
+<!-- RESULT -->
+<section id="result" class="hidden">
+<h2>🏆 Ergebnis</h2>
+<p id="resText"></p>
+</section>
 
 </div>
 
 <script>
-/* ---------- Navigation & Passwort ---------- */
-function show(id) {
-  var ids = [
-    'screen-intro','screen-quiz-info','screen-quiz',
-    'screen-maze-info','screen-maze',
-    'screen-bell-info','screen-bell',
-    'screen-guess-info','screen-guess',
-    'screen-story-info','screen-story',
-    'screen-code-info','screen-code',
-    'screen-timer-info','screen-timer',
-    'screen-bomb-info','screen-bomb',
-    'screen-result'
-  ];
-  ids.forEach(function(s) {
-    var el = document.getElementById(s);
-    if (el) el.classList.add('hidden');
-  });
-  document.getElementById(id).classList.remove('hidden');
+/* ---------- NAV ---------- */
+function show(id){
+["intro","quiz","mazeInfo","mazeScreen","bell","guess","story","timer","bomb","result"]
+.forEach(s=>document.getElementById(s).classList.add("hidden"));
+document.getElementById(id).classList.remove("hidden");
 }
 
-function checkPW() {
-  var pw = document.getElementById('pwInput').value.trim();
-  if (pw === 'HOTMarco') {
-    document.getElementById('pwScreen').style.display = 'none';
-    initIntro();
-  } else {
-    document.getElementById('pwError').style.display = 'block';
-  }
+/* ---------- PASSWORT ---------- */
+function checkPW(){
+if(pwInput.value==="HOTMarco"){
+pwScreen.style.display="none";
+game.classList.remove("hidden");
+show("intro");
+}else pwError.style.display="block";
 }
 
-var attempts = Number(localStorage.getItem('advent_attempts') || '0');
-
-function initIntro() {
-  show('screen-intro');
-  if (attempts > 0) {
-    var info = document.getElementById('attemptInfo');
-    info.style.display = 'block';
-    info.textContent =
-      "Hinweis: Auf diesem Gerät wurde schon gespielt. Nur der erste Versuch zählt!";
-  }
-}
-
-/* ---------- Globale Scores & Maxima ---------- */
-var playerName = "";
-var totalPoints = 0;
-var quizPoints = 0;
-var labyrinthPoints = 0;
-var bellPoints = 0;
-var guessPoints = 0;
-var storyPoints = 0;
-var codePoints = 0;
-var timerPoints = 0;
-var bombPoints = 0;
-
-var QUIZ_MAX = 10 * 10;
-var LABYRINTH_MAX = 80;
-var BELL_MAX = 30;
-var GUESS_MAX = 8 * 20;
-var STORY_MAX = 5 * 10;
-var CODE_MAX = 40;
-var TIMER_MAX = 50;
-var BOMB_MAX = 50;
-
-function goQuizInfo() {
-  var name = document.getElementById('playerName').value.trim();
-  if (!name) {
-    alert("Bitte gib deinen Namen ein.");
-    return;
-  }
-  playerName = name;
-  totalPoints = 0;
-  quizPoints = 0;
-  labyrinthPoints = 0;
-  bellPoints = 0;
-  guessPoints = 0;
-  storyPoints = 0;
-  codePoints = 0;
-  timerPoints = 0;
-  bombPoints = 0;
-  show('screen-quiz-info');
-}
-
-/* ---------- Quiz ---------- */
-var quiz = [
-  {
-    q: "Wie schreibt man „Feliz Navidad“ richtig?",
-    a: ["Felix Navidad","Feliz Navidat","Felis Navidad","Feliz Navedad","Feliz Navidad"],
-    c: 4
-  },
-  {
-    q: "In welchem Land heißt der Weihnachtsmann „Joulupukki“?",
-    a: ["Schweden","Finnland","Estland","Norwegen","Island"],
-    c: 1
-  },
-  {
-    q: "In welchem Land isst man traditionell an Weihnachten KFC (Fried Chicken)?",
-    a: ["Japan","USA","Australien","Südkorea","Brasilien"],
-    c: 0
-  },
-  {
-    q: "In welchem Land heißt der Weihnachtsmann „Ded Moroz“?",
-    a: ["Ukraine","Polen","Russland","Tschechien","Lettland"],
-    c: 2
-  },
-  {
-    q: "In welchem Land ist „Panettone“ das traditionelle Weihnachtsgebäck?",
-    a: ["Frankreich","Italien","Spanien","Griechenland","Kroatien"],
-    c: 1
-  },
-  {
-    q: "In welchem Land ist „Sinterklaas“ eine zentrale Figur in der Vorweihnachtszeit?",
-    a: ["Belgien","Deutschland","Niederlande","Schweden","Frankreich"],
-    c: 2
-  },
-  {
-    q: "Welches Land gilt als Ursprungsland des modernen, geschmückten Weihnachtsbaums?",
-    a: ["Österreich","Deutschland","Frankreich","Norwegen","Polen"],
-    c: 1
-  },
-  {
-    q: "In welchem US-Bundesstaat spielt der Großteil des Films „Kevin – Allein zu Haus“?",
-    a: ["New York","Kalifornien","Illinois","Ohio","Massachusetts"],
-    c: 2
-  },
-  {
-    q: "In welchem Land wurde das Weihnachtslied „Stille Nacht“ erstmals aufgeführt?",
-    a: ["Deutschland","Österreich","Schweiz","Frankreich","Italien"],
-    c: 1
-  },
-  {
-    q: "Wer ist gleich nochmal HOT?",
-    a: ["Bene","Simon","Der Weihnachtsmann","Der Grinch","Marco"],
-    c: 4
-  }
+/* ---------- QUIZ ---------- */
+let points=0;
+const quiz=[
+["In welchem Land heißt der Weihnachtsmann „Joulupukki“?",["Schweden","Finnland","Norwegen","Island"],1],
+["Wo lebt der Weihnachtsmann laut Legende?",["Alaska","Nordpol","Lappland","Kanada"],1]
 ];
-
-var qi = 0;
-
-function startQuiz() {
-  qi = 0;
-  quizPoints = 0;
-  show('screen-quiz');
-  renderQuestion();
+let qi=0;
+function startQuiz(){
+if(!playerName.value.trim()){alert("Bitte Name eingeben");return;}
+qi=0;points=0;
+show("quiz");renderQuiz();
+}
+function renderQuiz(){
+if(qi>=quiz.length){show("mazeInfo");return;}
+quizQ.textContent=quiz[qi][0];
+quizA.innerHTML="";
+quiz[qi][1].forEach((a,i)=>{
+let b=document.createElement("button");
+b.textContent=a;
+b.onclick=()=>{
+points+= i===quiz[qi][2] ? 10 : -5;
+qi++;renderQuiz();
+};
+quizA.appendChild(b);
+});
 }
 
-function renderQuestion() {
-  var qObj = quiz[qi];
-  document.getElementById('quiz-progress').textContent =
-    "Frage " + (qi + 1) + " von " + quiz.length;
-  document.getElementById('quiz-question').textContent = qObj.q;
-  var answersDiv = document.getElementById('quiz-answers');
-  answersDiv.innerHTML = '';
-  qObj.a.forEach(function(ans, i) {
-    var btn = document.createElement('button');
-    btn.textContent = ans;
-    btn.onclick = function() { checkAnswer(i); };
-    answersDiv.appendChild(btn);
-  });
-}
-
-function checkAnswer(i) {
-  var qObj = quiz[qi];
-  if (i === qObj.c) {
-    totalPoints += 10;
-    quizPoints += 10;
-    qi++;
-    if (qi < quiz.length) {
-      renderQuestion();
-    } else {
-      show('screen-maze-info');
-    }
-  } else {
-    totalPoints -= 1;
-    quizPoints -= 1;
-    alert("Falsch! -1 Punkt");
-  }
-}
-
-/* ---------- Labyrinth ---------- */
-var mazeCanvas = null;
-var mazeCtx = null;
-var mazeSize = 10;
-var cellSize = 0;
-var santa = { x: 0, y: 0 };
-var mazeTimerInterval = null;
-var mazeStart = 0;
-var mazeTime = 0;
-
-var mazeMap = [
-  [0,0,1,1,1,1,1,1,1,1],
-  [1,0,0,0,1,0,0,0,0,1],
-  [1,1,1,0,1,0,1,1,0,1],
-  [1,0,0,0,0,0,1,0,0,1],
-  [1,0,1,1,1,0,1,0,1,1],
-  [1,0,0,0,1,0,0,0,0,1],
-  [1,1,1,0,1,1,1,1,0,1],
-  [1,0,0,0,0,0,0,1,0,1],
-  [1,0,1,1,1,1,0,1,0,1],
-  [1,0,0,0,0,0,0,1,0,2]
+/* ---------- LABYRINTH ---------- */
+const map=[
+[0,0,1,1],
+[1,0,0,1],
+[1,1,0,2],
+[1,1,0,1]
 ];
-
-function setupMazeCanvas() {
-  mazeCanvas = document.getElementById('maze');
-  mazeCtx = mazeCanvas.getContext('2d');
-  var size = Math.min(360, window.innerWidth - 40);
-  mazeCanvas.width = size;
-  mazeCanvas.height = size;
-  cellSize = size / mazeSize;
+let santa={x:0,y:0},startTime;
+const ctx=maze.getContext("2d");
+function startMaze(){
+santa={x:0,y:0};
+startTime=performance.now();
+show("mazeScreen");
+drawMaze();
+}
+function drawMaze(){
+ctx.clearRect(0,0,320,320);
+for(let y=0;y<4;y++)for(let x=0;x<4;x++){
+ctx.fillStyle=map[y][x]===1?"#123":"#075";
+ctx.fillRect(x*80,y*80,80,80);
+if(map[y][x]===2){
+ctx.fillStyle="#fc0";
+ctx.fillRect(x*80+20,y*80+20,40,40);
+}
+}
+ctx.fillStyle="#e33";
+ctx.beginPath();
+ctx.arc(santa.x*80+40,santa.y*80+40,20,0,Math.PI*2);
+ctx.fill();
+mazeTime.textContent=((performance.now()-startTime)/1000).toFixed(2)+" s";
+}
+function moveSanta(dx,dy){
+let nx=santa.x+dx,ny=santa.y+dy;
+if(nx<0||ny<0||nx>=4||ny>=4||map[ny][nx]===1)return;
+santa={x:nx,y:ny};
+if(map[ny][nx]===2){
+points+=50;
+show("bell");
+}
+drawMaze();
 }
 
-function startMaze() {
-  show('screen-maze');
-  setupMazeCanvas();
-  santa = { x: 0, y: 0 };
-  mazeStart = performance.now();
-  mazeTime = 0;
-  document.getElementById('maze-time').textContent = "Zeit: 0,00 s";
-  if (mazeTimerInterval) clearInterval(mazeTimerInterval);
-  mazeTimerInterval = setInterval(function() {
-    mazeTime = (performance.now() - mazeStart) / 1000;
-    document.getElementById('maze-time').textContent =
-      "Zeit: " + mazeTime.toFixed(2) + " s";
-  }, 100);
-  drawMaze();
+/* ---------- GLOCKE ---------- */
+const bellSeq=["❄️","🎄","🔔","⭐","🔔","🎁","🔔"];
+let bi=0;
+function startBell(){
+bellStart.classList.add("hidden");
+bellBtn.classList.remove("hidden");
+bi=0;nextBell();
+}
+function nextBell(){
+if(bi>=bellSeq.length){show("guess");return;}
+bellSymbol.textContent=bellSeq[bi++];
+setTimeout(nextBell,600);
+}
+function pressBell(){
+points+= bellSymbol.textContent==="🔔" ? 10 : -3;
 }
 
-function drawMaze() {
-  var y, x, v, cx, cy;
-  for (y = 0; y < mazeSize; y++) {
-    for (x = 0; x < mazeSize; x++) {
-      v = mazeMap[y][x];
-      cx = x * cellSize;
-      cy = y * cellSize;
-      if (v === 1) {
-        mazeCtx.fillStyle = "#04131d";
-        mazeCtx.fillRect(cx, cy, cellSize, cellSize);
-      } else {
-        mazeCtx.fillStyle = "#06495b";
-        mazeCtx.fillRect(cx, cy, cellSize, cellSize);
-      }
-      if (v === 2) {
-        mazeCtx.fillStyle = "#f1c40f";
-        mazeCtx.fillRect(cx + cellSize*0.2, cy + cellSize*0.25, cellSize*0.6, cellSize*0.5);
-      }
-    }
-  }
-  var sx = santa.x * cellSize + cellSize / 2;
-  var sy = santa.y * cellSize + cellSize / 2;
-  mazeCtx.fillStyle = "#e74c3c";
-  mazeCtx.beginPath();
-  mazeCtx.arc(sx, sy, cellSize * 0.3, 0, Math.PI * 2);
-  mazeCtx.fill();
-}
-
-function moveSanta(dx, dy) {
-  var nx = santa.x + dx;
-  var ny = santa.y + dy;
-  if (nx < 0 || ny < 0 || nx >= mazeSize || ny >= mazeSize) return;
-  if (mazeMap[ny][nx] === 1) return;
-  santa.x = nx;
-  santa.y = ny;
-  if (mazeMap[ny][nx] === 2) {
-    if (mazeTimerInterval) clearInterval(mazeTimerInterval);
-    mazeTime = (performance.now() - mazeStart) / 1000;
-
-    if (mazeTime < 5)        labyrinthPoints = 80;
-    else if (mazeTime < 6)   labyrinthPoints = 70;
-    else if (mazeTime < 7)   labyrinthPoints = 60;
-    else if (mazeTime < 8)   labyrinthPoints = 50;
-    else                     labyrinthPoints = 30;
-
-    totalPoints += labyrinthPoints;
-    show('screen-bell-info');
-  }
-  drawMaze();
-}
-
-/* ---------- Glocken-Spiel ---------- */
-var bellSymbolsAll = ["🎄","🎁","⭐","🎅","❄️"];
-var bellSequence = [];
-var bellIndex = -1;
-var bellInterval = null;
-var bellCurrentIsBell = false;
-var bellClickedThisSymbol = false;
-var bellHits = 0;
-var bellFalseClicks = 0;
-var bellFinished = false;
-
-function startBellGame() {
-  show('screen-bell');
-  bellPoints = 0;
-  bellHits = 0;
-  bellFalseClicks = 0;
-  bellIndex = -1;
-  bellFinished = false;
-  document.getElementById('bell-result').textContent = "";
-  document.getElementById('bell-status').textContent =
-    "Tippe nur, wenn eine Glocke (🔔) zu sehen ist.";
-  document.getElementById('bell-button').textContent =
-    "JETZT tippen, wenn Glocke!";
-  generateBellSequenceFixed();
-  if (bellInterval) clearInterval(bellInterval);
-  nextBellSymbol();
-  bellInterval = setInterval(nextBellSymbol, 550);
-}
-
-function generateBellSequenceFixed() {
-  bellSequence = [];
-  for (var i = 0; i < 15; i++) {
-    if (i === 2 || i === 7 || i === 13) {
-      bellSequence.push({ symbol: "🔔", isBell: true });
-    } else {
-      var sym = bellSymbolsAll[i % bellSymbolsAll.length];
-      bellSequence.push({ symbol: sym, isBell: false });
-    }
-  }
-}
-
-function nextBellSymbol() {
-  bellIndex++;
-  if (bellIndex >= bellSequence.length) {
-    endBellGame();
-    return;
-  }
-  var obj = bellSequence[bellIndex];
-  document.getElementById('bell-symbol').textContent = obj.symbol;
-  document.getElementById('bell-progress').textContent =
-    "Symbol " + (bellIndex + 1) + " von " + bellSequence.length;
-  bellCurrentIsBell = obj.isBell;
-  bellClickedThisSymbol = false;
-}
-
-function pressBell() {
-  if (!bellFinished) {
-    if (bellCurrentIsBell && !bellClickedThisSymbol) {
-      var pts = 10;
-      bellPoints += pts;
-      bellHits++;
-      bellClickedThisSymbol = true;
-      document.getElementById('bell-status').textContent =
-        "Glocke getroffen! (+" + pts + " Punkte)";
-    } else {
-      bellPoints -= 3;
-      bellFalseClicks++;
-      document.getElementById('bell-status').textContent =
-        "Fehlklick! -3 Punkte";
-    }
-  } else {
-    show('screen-guess-info');
-  }
-}
-
-function endBellGame() {
-  if (bellInterval) clearInterval(bellInterval);
-  bellFinished = true;
-  totalPoints += bellPoints;
-  document.getElementById('bell-result').innerHTML =
-    "Glocken getroffen: <b>" + bellHits + "</b> von 3<br>" +
-    "Fehlklicks: <b>" + bellFalseClicks + "</b><br>" +
-    "Punkte im Glocken-Spiel: <b>" + bellPoints + "</b>";
-  document.getElementById('bell-status').textContent =
-    "Runde beendet.";
-  document.getElementById('bell-button').textContent =
-    "Weiter zu den Schätzfragen ▶️";
-}
-
-/* ---------- Schätzfragen ---------- */
-var guesses = [
-  { q: "Wie viele Christbäume wurden 2024 in Deutschland verkauft? (in Millionen)", correct: 23, unit: "Mio." },
-  { q: "Wie viel Truthahnfleisch wurde 2024 in den USA verzehrt? (in Tausend Tonnen)", correct: 228, unit: "Tsd. Tonnen" },
-  { q: "Wie viele Liter Glühwein trinken die Deutschen pro Jahr? (in Millionen Litern)", correct: 50, unit: "Mio. Liter" },
-  { q: "Wie viele Pakete liefert DHL im Dezember in Deutschland aus? (in Millionen Paketen)", correct: 675, unit: "Mio. Pakete" },
-  { q: "Wie viele Weihnachtsmärkte gibt es in Deutschland? (Anzahl)", correct: 2500, unit: "" },
-  { q: "Wie viele Schoko-Weihnachtsmänner werden in Deutschland pro Jahr produziert? (in Millionen Stück)", correct: 151, unit: "Mio." },
-  { q: "Wie viel Geld gibt eine Person in Deutschland im Schnitt für Weihnachten aus? (in Euro pro Person)", correct: 550, unit: "€" },
-  { q: "Wie weit ist Nürnberg vom Standort des Weihnachtsmanns am Nordpol entfernt? (in Kilometern)", correct: 4200, unit: "km" }
+/* ---------- SCHÄTZFRAGEN ---------- */
+const guesses=[
+["Christbäume in Deutschland (in Millionen)",23],
+["Truthahnfleisch USA pro Kopf (kg)",0.68],
+["Glühwein in Deutschland (in Mio. Litern)",50],
+["DHL-Pakete im Dezember (in Millionen)",675],
+["Weihnachtsmärkte in Deutschland (Anzahl)",2500],
+["Schoko-Weihnachtsmänner pro Kopf",1.8],
+["Weihnachtsausgaben pro Person (€)",550],
+["Nürnberg → Nordpol (km)",4200]
 ];
-
-var guessIndex = 0;
-var guessState = 'question';
-
-function startGuessGame() {
-  show('screen-guess');
-  guessIndex = 0;
-  guessPoints = 0;
-  guessState = 'question';
-  renderGuessQuestion();
+let gi=0;
+function showGuess(){
+if(gi>=guesses.length){show("story");return;}
+guessQ.textContent=guesses[gi][0];
+guessInput.value="";
+guessRes.textContent="";
 }
+guessInput.onchange=()=>{
+let v=parseFloat(guessInput.value.replace(",",".")),c=guesses[gi][1];
+if(isNaN(v))return;
+let d=Math.abs(v-c)/c*100;
+let p=d<=2?20:d<=5?15:d<=10?10:d<=20?5:0;
+points+=p;
+guessRes.innerHTML=`Richtig: <b>${c}</b> – Punkte: <b>${p}</b>`;
+gi++;
+setTimeout(showGuess,3000);
+};
 
-function renderGuessQuestion() {
-  var g = guesses[guessIndex];
-  document.getElementById('guess-progress').textContent =
-    "Schätzfrage " + (guessIndex + 1) + " von " + guesses.length;
-  document.getElementById('guess-question').textContent = g.q;
-  document.getElementById('guessInput').value = "";
-  document.getElementById('guess-result').textContent = "";
-  document.getElementById('guessBtn').textContent = "Antwort prüfen";
-  guessState = 'question';
-}
+/* ---------- STORY (keine HOT-Marco-Frage!) ---------- */
+const storyTextContent=
+`Am 17.12.2003 verschwanden exakt 312 Wunschzettel aus dem gesicherten Archivraum B-24.
+Laut Protokoll war der Weihnachtsmann zwischen 22:30 und 23:10 Uhr allein dort.
+Auffällig war eine rote Thermoskanne mit der Aufschrift „Beweismaterial“,
+gefüllt mit einem stark gewürzten Glühwein namens „HOT Marco“ – im Archiv strikt verboten.
+Zusätzlich wurde der Zugangscode kurz zuvor auf 1225 geändert.
+Der Fall wurde später als ethisch motivierte Manipulation geschlossen:
+Ein Erwachsener sollte nicht zum siebten Mal denselben Bluetooth-Sockenwärmer bekommen.`;
 
-function submitGuess() {
-  var g = guesses[guessIndex];
-  if (guessState === 'question') {
-    var raw = document.getElementById('guessInput').value.trim().replace(',', '.');
-    var val = parseFloat(raw);
-    if (isNaN(val)) {
-      alert("Bitte eine Zahl eingeben (nur Zahl, ohne Einheit).");
-      return;
-    }
-    var diff = Math.abs(val - g.correct);
-    var diffPercent = (diff / g.correct) * 100;
-    var pts = 2;
-    if (diffPercent <= 5)      pts = 20;
-    else if (diffPercent <=10) pts = 15;
-    else if (diffPercent <=20) pts = 10;
-    else if (diffPercent <=30) pts = 5;
-
-    guessPoints += pts;
-    totalPoints += pts;
-    document.getElementById('guess-result').innerHTML =
-      "Deine Schätzung: <b>" + val + " " + g.unit + "</b><br>" +
-      "Richtige Antwort: <b>" + g.correct + " " + g.unit + "</b><br>" +
-      "Abweichung: <b>" + diffPercent.toFixed(1) + "%</b><br>" +
-      "Punkte: <b>" + pts + "</b>";
-    guessState = 'answer';
-    document.getElementById('guessBtn').textContent =
-      (guessIndex < guesses.length - 1) ? "Nächste Schätzfrage ▶️" : "Weiter zur Story ▶️";
-  } else {
-    if (guessIndex < guesses.length - 1) {
-      guessIndex++;
-      renderGuessQuestion();
-    } else {
-      show('screen-story-info');
-    }
-  }
-}
-
-/* ---------- Story-Spiel ---------- */
-var storyTextLevel5 = (
-  "Laut einem inoffiziellen Bericht aus dem Jahr 1996, der angeblich von einem Rentier-Praktikanten verfasst wurde, " +
-  "wollte der Weihnachtsmann ursprünglich von Nürnberg aus eine „Transarktische Geschenk-Lieferroute“ eröffnen, " +
-  "nachdem in Lappland die offizielle Genehmigung für nächtlichen Schlittenverkehr wegen Energiesparmaßnahmen entzogen wurde. " +
-  "Unbestätigten Quellen zufolge ging es dabei um genau 14,5 Tonnen Rentier-Heizpellets, " +
-  "die vom „Nordpolministerium für klimaneutrale Nikolauslogistik“ unter Aktenzeichen RN-2487-B erfasst worden sein sollen – " +
-  "allerdings erst nach einem Zwischenfall mit „Rudolphs Experimental-LED-Nase“ am 06.12. um 04:22 Uhr, " +
-  "als ein defekter Glühwein-Kondensator in Finnland durchging und irrtümlich die Sicherheitssirenen für Schlittenlandeverbote auslöste. " +
-  "Experten sind sich jedoch einig, dass entweder die Tonnage, das Aktenzeichen, die Uhrzeit ODER Finnland komplett frei erfunden sein könnten – " +
-  "aber welche der vier Angaben erfunden wurde, sagt natürlich niemand, aus Datenschutzgründen."
-);
-
-var storyQuestions = [
-  {
-    q: "In welcher Stadt sollte die neue Lieferroute ursprünglich starten?",
-    a: ["Lappland","Nürnberg","Finnland","Nordpol","Stockholm"],
-    c: 1
-  },
-  {
-    q: "Warum wurde der nächtliche Schlittenverkehr in Lappland entzogen?",
-    a: ["Schlechtes Wetter","Rentierstreik","Energiesparmaßnahmen","Lärmbeschwerden","Glühweinmangel"],
-    c: 2
-  },
-  {
-    q: "Wie viele Tonnen Rentier-Heizpellets waren geplant?",
-    a: ["14","14,5","145","4,22","2487"],
-    c: 1
-  },
-  {
-    q: "Was löste die Sicherheitssirenen aus?",
-    a: ["Rudolph selbst","Ein defekter Glühwein-Kondensator","Ein Schneesturm","Ein Stromausfall in Nürnberg","Das falsche Aktenzeichen"],
-    c: 1
-  },
-  {
-    q: "Was sagen Experten über Tonnage, Aktenzeichen, Uhrzeit und Finnland?",
-    a: ["Nur die Uhrzeit ist erfunden","Nur Finnland ist erfunden","Nur die Tonnage ist erfunden","Nur das Aktenzeichen ist erfunden","Theoretisch könnten alle erfunden sein"],
-    c: 4
-  }
+const storyQuestions=[
+["Wie viele Wunschzettel verschwanden?",["302","312","320","1225"],1],
+["Welcher Raum war betroffen?",["A-12","B-24","C-17","X-MAS"],1],
+["Warum wurde der Fall geschlossen?",["Softwarefehler","Elfenstreik","Ethische Manipulation","Zeitmangel"],2]
 ];
+let si=0;
+storyText.textContent=storyTextContent;
 
-var storyIndex = 0;
-
-function startStoryGame() {
-  show('screen-story');
-  storyPoints = 0;
-  storyIndex = 0;
-  document.getElementById('story-qa').classList.add('hidden');
-  document.getElementById('story-btn-area').classList.remove('hidden');
-  document.getElementById('story-result').textContent = "";
-  document.getElementById('story-text').textContent = storyTextLevel5;
+function startStoryQ(){
+storyQ.classList.remove("hidden");
+nextStoryQ();
+}
+function nextStoryQ(){
+if(si>=storyQuestions.length){show("timer");return;}
+storyQ.innerHTML="";
+storyQuestions[si][1].forEach((a,i)=>{
+let b=document.createElement("button");
+b.textContent=a;
+b.onclick=()=>{
+if(i===storyQuestions[si][2])points+=10;
+si++;nextStoryQ();
+};
+storyQ.appendChild(b);
+});
 }
 
-function startStoryQuestions() {
-  document.getElementById('story-text').textContent =
-    "Der Text ist weg – jetzt kommt die Erinnerung dran. 😈";
-  document.getElementById('story-btn-area').classList.add('hidden');
-  document.getElementById('story-qa').classList.remove('hidden');
-  renderStoryQuestion();
+/* ---------- TIMER ---------- */
+let tStart=0,running=false;
+function toggleTimer(){
+if(!running){
+running=true;tStart=performance.now();timerBtn.textContent="Stopp";
+}else{
+running=false;
+let t=(performance.now()-tStart)/1000;
+let d=Math.abs(t-10);
+let p=d<0.1?50:d<0.5?30:10;
+points+=p;
+timerRes.textContent=`${t.toFixed(2)} s → ${p} Punkte`;
+setTimeout(startBomb,1500);
+}
 }
 
-function renderStoryQuestion() {
-  var qObj = storyQuestions[storyIndex];
-  document.getElementById('story-progress').textContent =
-    "Frage " + (storyIndex + 1) + " von " + storyQuestions.length;
-  document.getElementById('story-question').textContent = qObj.q;
-  var answersDiv = document.getElementById('story-answers');
-  answersDiv.innerHTML = '';
-  document.getElementById('story-result').textContent = "";
-  qObj.a.forEach(function(ans, i) {
-    var btn = document.createElement('button');
-    btn.textContent = ans;
-    btn.onclick = function() { checkStoryAnswer(i); };
-    answersDiv.appendChild(btn);
-  });
+/* ---------- BOMBEN ---------- */
+let bomb=Math.floor(Math.random()*6);
+function startBomb(){
+show("bomb");
+bombGrid.innerHTML="";
+bombRes.textContent="";
+for(let i=0;i<6;i++){
+let b=document.createElement("button");
+b.className="gift-btn";
+b.textContent="🎁";
+b.onclick=()=>{
+if(i===bomb){
+b.textContent="💣";
+finish();
+}else{
+b.textContent="✅";
+points+=5;
 }
-
-function checkStoryAnswer(i) {
-  var qObj = storyQuestions[storyIndex];
-  var res = document.getElementById('story-result');
-  if (i === qObj.c) {
-    storyPoints += 10;
-    totalPoints += 10;
-    res.textContent = "Richtig! +10 Punkte.";
-  } else {
-    res.textContent = "Falsch – keine Punkte, aber Respekt fürs Mitlesen.";
-  }
-  storyIndex++;
-  if (storyIndex < storyQuestions.length) {
-    setTimeout(function() {
-      renderStoryQuestion();
-    }, 900);
-  } else {
-    setTimeout(function() {
-      show('screen-code-info');
-    }, 900);
-  }
+};
+bombGrid.appendChild(b);
 }
-
-/* ---------- Code-Spiel ---------- */
-var codeSymbols = ["🎄","🎁","⭐","🎅","🔔"];
-var secretCode = [];
-var codeAttempt = 0;
-var maxCodeAttempts = 7;
-var codeSolved = false;
-
-function fillCodeSelects() {
-  ['codePos1','codePos2','codePos3'].forEach(function(id) {
-    var sel = document.getElementById(id);
-    sel.innerHTML = "";
-    codeSymbols.forEach(function(sym) {
-      var opt = document.createElement('option');
-      opt.value = sym;
-      opt.textContent = sym;
-      sel.appendChild(opt);
-    });
-  });
 }
-
-function startCodeGame() {
-  show('screen-code');
-  fillCodeSelects();
-  var shuffled = codeSymbols.slice().sort(function() { return Math.random() - 0.5; });
-  secretCode = shuffled.slice(0,3);
-  codeAttempt = 0;
-  codeSolved = false;
-  document.getElementById('code-log').innerHTML = "";
-  document.getElementById('code-result').textContent = "";
-  var btn = document.getElementById('codeBtn');
-  btn.textContent = "Kombination prüfen";
-  btn.onclick = submitCodeGuess;
-  document.getElementById('code-progress').textContent =
-    "Versuch 1 von " + maxCodeAttempts;
-}
-
-function submitCodeGuess() {
-  if (codeSolved || codeAttempt >= maxCodeAttempts) return;
-
-  var g1 = document.getElementById('codePos1').value;
-  var g2 = document.getElementById('codePos2').value;
-  var g3 = document.getElementById('codePos3').value;
-  var guess = [g1,g2,g3];
-
-  codeAttempt++;
-
-  var exact = 0;
-  var partial = 0;
-
-  var secretCopy = secretCode.slice();
-  var guessCopy = guess.slice();
-
-  var i, idx;
-  for (i=0; i<3; i++){
-    if (guessCopy[i] === secretCopy[i]) {
-      exact++;
-      secretCopy[i] = null;
-      guessCopy[i] = null;
-    }
-  }
-  for (i=0; i<3; i++){
-    if (guessCopy[i] !== null) {
-      idx = secretCopy.indexOf(guessCopy[i]);
-      if (idx !== -1) {
-        partial++;
-        secretCopy[idx] = null;
-        guessCopy[i] = null;
-      }
-    }
-  }
-
-  var log = document.getElementById('code-log');
-  var row = document.createElement('div');
-  row.className = 'code-row';
-  row.textContent =
-    "Versuch " + codeAttempt + ": " + g1 + " " + g2 + " " + g3 +
-    " → exakt: " + exact + ", falsche Position: " + partial;
-  log.appendChild(row);
-
-  var progress = document.getElementById('code-progress');
-  var resultEl = document.getElementById('code-result');
-  var btn = document.getElementById('codeBtn');
-
-  if (exact === 3) {
-    codeSolved = true;
-    if (codeAttempt <= 2)      codePoints = 40;
-    else if (codeAttempt <= 4) codePoints = 25;
-    else                       codePoints = 10;
-    totalPoints += codePoints;
-    progress.textContent = "Code geknackt in " + codeAttempt + " Versuchen.";
-    resultEl.innerHTML = "Punkte im Code-Spiel: <b>" + codePoints + "</b>";
-    btn.textContent = "Weiter zur 10-Sekunden-Challenge ▶️";
-    btn.onclick = function() { show('screen-timer-info'); };
-  } else if (codeAttempt >= maxCodeAttempts) {
-    codePoints = 0;
-    progress.textContent = "Keine Versuche mehr übrig.";
-    resultEl.innerHTML = "Code nicht geknackt. Punkte im Code-Spiel: <b>0</b>";
-    btn.textContent = "Weiter zur 10-Sekunden-Challenge ▶️";
-    btn.onclick = function() { show('screen-timer-info'); };
-  } else {
-    progress.textContent =
-      "Versuch " + (codeAttempt + 1) + " von " + maxCodeAttempts;
-  }
-}
-
-/* ---------- 10-Sekunden-Challenge ---------- */
-var timerRunning = false;
-var timerStartTime = 0;
-var timerTime = 0;
-
-function startTimerGame() {
-  show('screen-timer');
-  timerRunning = false;
-  timerTime = 0;
-  document.getElementById('timer-info').textContent =
-    "Drücke „Start“, zähle im Kopf und drücke „Stopp“ möglichst genau bei 10,00 s.";
-  document.getElementById('timer-result').textContent = "";
-  document.getElementById('timerStartBtn').disabled = false;
-  document.getElementById('timerStopBtn').disabled = true;
-  document.getElementById('timer-next').innerHTML = "";
-}
-
-function timerStart() {
-  if (timerRunning) return;
-  timerRunning = true;
-  timerStartTime = performance.now();
-  document.getElementById('timerStartBtn').disabled = true;
-  document.getElementById('timerStopBtn').disabled = false;
-  document.getElementById('timer-info').textContent =
-    "Läuft... Stopp drücken, wenn du glaubst, dass 10,00 s vorbei sind.";
-}
-
-function timerStop() {
-  if (!timerRunning) return;
-  timerRunning = false;
-  timerTime = (performance.now() - timerStartTime) / 1000;
-  document.getElementById('timerStopBtn').disabled = true;
-  var diff = Math.abs(timerTime - 10);
-  var pts = 10;
-  if (diff <= 0.05)      pts = 50;
-  else if (diff <= 0.20) pts = 40;
-  else if (diff <= 0.50) pts = 30;
-  else if (diff <= 1.00) pts = 20;
-
-  timerPoints = pts;
-  totalPoints += pts;
-
-  document.getElementById('timer-result').innerHTML =
-    "Deine Zeit: <b>" + timerTime.toFixed(2) + " s</b><br>" +
-    "Abweichung von 10,00 s: <b>" + diff.toFixed(2) + " s</b><br>" +
-    "Punkte in der 10-Sekunden-Challenge: <b>" + timerPoints + "</b>";
-
-  var nextContainer = document.getElementById('timer-next');
-  nextContainer.innerHTML = "";
-  var btn = document.createElement('button');
-  btn.textContent = "Weiter zum Bomben-Spiel ▶️";
-  btn.onclick = function() { show('screen-bomb-info'); };
-  nextContainer.appendChild(btn);
-}
-
-/* ---------- Geschenk-Bomben-Spiel ---------- */
-var bombIndex = 0;
-var bombOpened = [];
-var bombGameOver = false;
-
-function startBombGame() {
-  show('screen-bomb');
-  bombPoints = 0;
-  bombOpened = [false,false,false,false,false,false];
-  bombGameOver = false;
-  bombIndex = Math.floor(Math.random() * 6);
-  document.getElementById('bomb-result').textContent = "";
-  document.getElementById('bomb-next').innerHTML = "";
-  document.getElementById('bomb-info-label').textContent =
-    "Wähle ein Geschenk – vermeide die Bombe!";
-  var grid = document.getElementById('bomb-grid');
-  grid.innerHTML = "";
-  for (var i=0;i<6;i++) {
-    (function(idx) {
-      var btn = document.createElement('button');
-      btn.className = 'gift-btn';
-      btn.textContent = "🎁";
-      btn.onclick = function() { openGift(idx, btn); };
-      grid.appendChild(btn);
-    })(i);
-  }
-}
-
-function openGift(i, btn) {
-  if (bombGameOver || bombOpened[i]) return;
-  bombOpened[i] = true;
-  if (i === bombIndex) {
-    btn.textContent = "💣";
-    btn.style.background = "#ff6666";
-    bombGameOver = true;
-    document.getElementById('bomb-info-label').textContent =
-      "Boom! Du hast die Bombe erwischt.";
-    document.getElementById('bomb-result').innerHTML =
-      "Punkte im Bomben-Spiel: <b>" + bombPoints + "</b>";
-    var next = document.getElementById('bomb-next');
-    next.innerHTML = "";
-    var b = document.createElement('button');
-    b.textContent = "Weiter zum Ergebnis ▶️";
-    b.onclick = finishGame;
-    next.appendChild(b);
-  } else {
-    bombPoints += 5;
-    totalPoints += 5;
-    btn.textContent = "✅";
-    btn.style.background = "#66ff99";
-    var safeOpened = bombOpened.filter(function(v, idx) {
-      return v && idx !== bombIndex;
-    }).length;
-    if (safeOpened === 5) {
-      bombPoints += 20;
-      totalPoints += 20;
-      bombGameOver = true;
-      document.getElementById('bomb-info-label').textContent =
-        "Stark! Du hast alle sicheren Geschenke erwischt.";
-      document.getElementById('bomb-result').innerHTML =
-        "Punkte im Bomben-Spiel: <b>" + bombPoints + "</b>";
-      var next2 = document.getElementById('bomb-next');
-      next2.innerHTML = "";
-      var b2 = document.createElement('button');
-      b2.textContent = "Weiter zum Ergebnis ▶️";
-      b2.onclick = finishGame;
-      next2.appendChild(b2);
-    }
-  }
-}
-
-/* ---------- Ergebnis ---------- */
-function finishGame() {
-  show('screen-result');
-  attempts++;
-  localStorage.setItem('advent_attempts', String(attempts));
-
-  var attemptText = (attempts === 1)
-    ? "Dies war dein erster offizieller Versuch."
-    : "Hinweis: Nur dein erster Versuch zählt.";
-
-  document.getElementById('resultPoints').innerHTML =
-    playerName + ", du hast insgesamt <b>" + totalPoints + "</b> Punkte!<br><br>" +
-    "Quiz: <b>" + quizPoints + "</b> / " + QUIZ_MAX + " Punkte<br>" +
-    "Labyrinth: <b>" + labyrinthPoints + "</b> / " + LABYRINTH_MAX + " Punkte<br>" +
-    "Glocken-Spiel: <b>" + bellPoints + "</b> / " + BELL_MAX + " Punkte<br>" +
-    "Schätzfragen: <b>" + guessPoints + "</b> / " + GUESS_MAX + " Punkte<br>" +
-    "Stille-Post-Story: <b>" + storyPoints + "</b> / " + STORY_MAX + " Punkte<br>" +
-    "Code-Spiel: <b>" + codePoints + "</b> / " + CODE_MAX + " Punkte<br>" +
-    "10-Sekunden-Challenge: <b>" + timerPoints + "</b> / " + TIMER_MAX + " Punkte<br>" +
-    "Bomben-Spiel: <b>" + bombPoints + "</b> / " + BOMB_MAX + " Punkte<br><br>" +
-    "Anzahl der Versuche auf diesem Gerät: <b>" + attempts + "</b><br>" +
-    attemptText;
+function finish(){
+show("result");
+resText.innerHTML=`<b>${playerName.value}</b>, du hast <b>${points}</b> Punkte erzielt!`;
 }
 </script>
 
