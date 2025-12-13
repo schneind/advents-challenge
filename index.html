@@ -892,13 +892,12 @@ function submitGuess() {
   var diff = Math.abs(val - g.correct);
   var diffPercent = (diff / g.correct) * 100;
 
-  /* ✅ NEU: brutaler, fairer Score */
-  var pts = 0;
-  if (diffPercent <= 2) pts = 20;
-  else if (diffPercent <= 5) pts = 15;
-  else if (diffPercent <= 10) pts = 10;
-  else if (diffPercent <= 20) pts = 5;
-  else pts = 0;
+// GNÄDIG: 30 Punkte max, gleitend
+var pts = Math.round(30 * Math.exp(-diffPercent / 40));
+
+// Sicherheitsgrenzen
+if (pts < 0) pts = 0;
+if (pts > 30) pts = 30;
 
   guessPoints += pts;
   totalPoints += pts;
